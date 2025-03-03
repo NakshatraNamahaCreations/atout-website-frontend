@@ -1,0 +1,92 @@
+@import '@fortawesome/fontawesome-free/css/all.css';
+.banner-image {
+    width: 100%; /* Set to 100% to take full width of the container */
+    height: 650px; /* Set the desired height */
+    object-fit: cover; /* Ensures the image covers the space without distortion */
+}
+
+/* Dots Styling */
+.dot {
+    width: 12px;
+    height: 12px;
+    margin: 0 5px;
+    background-color: rgba(0, 0, 0, 0.5); 
+    border-radius: 50%;
+    cursor: pointer;
+    display: inline-block; 
+    transition: all 0.3s ease; 
+  }
+  
+ 
+  .dot.active {
+    background-color: yellow;
+    width: 18px; 
+    height: 18px; 
+  }
+
+  .dot:hover {
+    background-color: rgba(0, 0, 0, 0.8); 
+  }
+  
+ 
+.carousel-image-container {
+    position: relative; 
+    width: 100%;
+  }
+  
+
+  .carousel-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    z-index: 1;
+  }
+  
+
+  .carousel-text h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+  
+
+  .carousel-text p {
+    font-size: 1.2rem;
+    margin-top: 0;
+  }
+  
+
+  .carousel-text h2, .carousel-text p {
+    padding: 10px;
+  }
+  
+  .scale-animation {
+    transform: scale(1.1); /* Zoom in the image */
+    transition: transform 0.3s ease-in-out; /* Smooth transition */
+  }
+  
+  .scale-animation img {
+    transition: transform 0.3s ease-in-out;
+  }
+  .slider-container .slick-slide {
+    padding-right: 10px; /* Gap after each image */
+    padding-left: 10px;  /* Gap before each image */
+  }
+    
+  
+
+@media (max-width: 768px) {
+    .banner-image {
+        height: 250px; /* Adjust height for smaller screens */
+    }
+    .dot {
+        width: 10px;
+        height: 10px;
+      }
+      .dot.active {
+        width: 14px;
+        height: 14px;
+      }
+}
