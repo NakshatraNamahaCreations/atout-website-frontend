@@ -107,7 +107,7 @@ const ShopByCategory = ({
           color: color.trim() !== "" ? color : undefined, // Only send if color is entered
           material: material.trim() !== "" ? material : undefined, // Only send if material is entered
         },
-        withCredentials: true,
+       
         headers: {
           "Content-Type": "application/json",
         },
