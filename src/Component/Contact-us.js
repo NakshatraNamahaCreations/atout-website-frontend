@@ -1,10 +1,16 @@
 // src/Component/ContactUs.js
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import contactImage from "../Images/contactusimage.png"; // Update with the correct path to your image
 
 const ContactUs = () => {
+
+    useLayoutEffect(() => {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, []);
+  
   return (
-    <div className="container overflow-hidden" style={{marginTop:'9%', overflowX:'hidden'}}>
+    <div className="container overflow-hidden" style={{marginTop:'9%', overflowX:'hidden',   fontFamily:"'Poppins', sans-serif",}}>
       <div className="row">
         {/* First Column - Image */}
         <div className="col-md-6">
@@ -18,7 +24,7 @@ const ContactUs = () => {
 
         {/* Second Column - Text */}
         <div className="col-md-6">
-          <h2 className="text-primary mb-4">Hi People!</h2>
+          <h2 className="text-dark mb-4">Hi People!</h2>
           <p>
           Have questions or need assistance? We’re here to help! Whether you’re looking
 for the perfect saree for a special occasion or have inquiries about our collections,

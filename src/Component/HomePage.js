@@ -9,6 +9,7 @@ import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { useLayoutEffect } from "react";
 import "swiper/css/autoplay";
 import axios from 'axios';
 import Slider from "react-slick";
@@ -33,6 +34,13 @@ const HomePage = () => {
 
   useEffect(() => {
     fetchSoldProducts();
+  }, []);
+
+
+  
+  useLayoutEffect(() => {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   }, []);
 
   const fetchSoldProducts = async () => {
@@ -81,8 +89,8 @@ const HomePage = () => {
   };
 
   return (
-    <div style={{overflow:'hidden'}}>
-    <div className="container-fluid">
+    <div style={{overflow:'hidden',   fontFamily:"'Poppins', sans-serif",}}>
+    <div className="w-100">
       <Carousel
         activeIndex={activeIndex}
         onSelect={handleSelect}
@@ -158,8 +166,15 @@ const HomePage = () => {
 
   <div className="row mt-2">
   {/* 1st Column - Image */}
-  <div className="col-md-6">
-    <div className="position-relative" style={{ width: '338px', height: '447px' }}>
+  <div className="col-md-6 d-flex justify-content-center">
+    <div
+      className="position-relative"
+      style={{
+        width: '338px',
+        height: '447px',
+        marginLeft: '-190px', // Move the entire image container left
+      }}
+    >
       <img
         src={ladyimage}
         alt="Main Image"
@@ -171,18 +186,18 @@ const HomePage = () => {
         alt="Overlay Image"
         className="position-absolute"
         style={{
-          width: '420px', // Adjust the size of the overlay image
+          width: '420px',
           height: '273px',
-          bottom: '-22px', // Adjust the bottom position
-          right: '-214px', // Adjust the right position
+          bottom: '-22px',
+          right: '-214px',
         }}
       />
     </div>
   </div>
 
   {/* 2nd Column - Text */}
-  <div className="col-md-6" style={{ marginTop: '7%' }}>
-    <h3>Little Bit About Us</h3>
+  <div className="col-md-6" style={{ marginTop: '7%', marginLeft:'-15px' }}>
+    <h3>About Us</h3>
     <p>
       <span style={{ color: 'red', fontFamily: 'Satisfy', fontSize: '18px' }}>
         Atout by Supriya
@@ -196,6 +211,7 @@ const HomePage = () => {
     </p>
   </div>
 </div>
+
 
 {/* Vector Image Below the Two Columns */}
 <div className="row mt-4 text-center">
@@ -213,8 +229,8 @@ const HomePage = () => {
 <div className="row mt-4 text-center">
       <div className="col-12">
         {/* Centered Text */}
-        <h2 className="fw-bold">New Arrival</h2>
-        <h3 className="text-muted" style={{ color: "#007BFF" }}>Maheshwari Silk Sarees</h3>
+        <h2 className="fw-bold" style= {{fontSize:'20px'}}>New Arrival</h2>
+        <h3 className="text-muted" style={{ color: "#007BFF" , fontSize:'20px'}}>Maheshwari Silk Sarees</h3>
 
         {/* Saree Images */}
 
@@ -292,7 +308,7 @@ const HomePage = () => {
     }}
   >
     <p>Exclusive Collection</p>
-    <Link to="/shop" className="btn btn-primary">Shop Now</Link>
+    <Link to="/shop" className="btn " style={{backgroundColor:'#522C1B', color:'white'}}>Shop Now</Link>
 
 
   </div>
@@ -301,22 +317,20 @@ const HomePage = () => {
 <div className="row mt-4 text-center">
       <div className="col-12">
         {/* Centered Text */}
-        <h2 className="fw-bold">Best Selling Products</h2>
-        <h3 className="text-muted" style={{ color: "#007BFF" }}>Most Popular Sarees</h3>
+        <h2 className="fw-bold" style={{fontSize:'20px'}}>Best Selling Products</h2>
+        <h3 className="text-muted" style={{ color: "#007BFF", fontSize:'20px' }}>Most Popular Sarees</h3>
 
         {/* Swiper Slider */}
         <Swiper
-  modules={[Navigation, Pagination, Autoplay]}
-  slidesPerView={4} 
+  modules={[Autoplay]} // Removed Navigation and Pagination modules
+  slidesPerView={4}
   spaceBetween={20}
-  navigation
-  pagination={{ clickable: true }}
   autoplay={{ delay: 2500, disableOnInteraction: false }}
   loop={true}
   breakpoints={{
-    320: { slidesPerView: 1 },  
-    768: { slidesPerView: 2 },  
-    1024: { slidesPerView: 3 }, 
+    320: { slidesPerView: 1 },
+    768: { slidesPerView: 2 },
+    1024: { slidesPerView: 3 },
     1280: { slidesPerView: 4 },
   }}
 >
@@ -328,15 +342,21 @@ const HomePage = () => {
           style={{ width: "300px", height: "444px", cursor: "pointer" }}
         >
           <img
-            src={product.images[0]} 
+            src={product.images[0]}
             alt={product.name}
             className="img-fluid"
-            style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "10px" }}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              borderRadius: "10px",
+            }}
           />
           <div
             className="position-absolute start-0 top-0 w-100 h-100"
             style={{
-              background: "linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.8) 100%)",
+              background:
+                "linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.8) 100%)",
             }}
           ></div>
           <div
@@ -349,15 +369,22 @@ const HomePage = () => {
             }}
           >
             <div style={{ fontSize: "16px", marginBottom: "2px" }}>{product.name}</div>
-            <div style={{ fontSize: "16px", marginBottom: "2px", color: "#FFC8B0" }}>
+            <div
+              style={{
+                fontSize: "16px",
+                marginBottom: "2px",
+                color: "#FFC8B0",
+              }}
+            >
               Rs. {product.price} + shipping
             </div>
           </div>
         </div>
       </Link>
     </SwiperSlide>
-      ))}
+  ))}
 </Swiper>
+
       </div>
     </div>
 

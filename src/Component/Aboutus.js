@@ -1,9 +1,15 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import aboutimage from "../Images/aboutus.png"; // Adjust the path to your image
 
 function AboutUs() {
+
+    useLayoutEffect(() => {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, []);
+  
   return (
-    <div className="container" style={{ marginTop: '120px' }}>
+    <div className="container" style={{ marginTop: '120px',   fontFamily:"'Poppins', sans-serif", }}>
       <div className="row">
         {/* First Column: Text */}
         <div className="col-md-6">

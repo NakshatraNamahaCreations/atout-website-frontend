@@ -56,7 +56,11 @@ const MyOrdersPage = () => {
   };
 
   return (
-    <div className="container py-5">
+    <div className=""style={{  display: "flex", 
+      flexDirection: "column", 
+      minHeight: "50vh",
+      fontFamily:"'Poppins', sans-serif",
+      marginTop:'7%'}}>
       <h2 className="mb-4">My Orders</h2>
       {userOrders.length > 0 ? (
         <div className="row">

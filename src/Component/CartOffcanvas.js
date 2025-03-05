@@ -25,7 +25,7 @@ const CartOffcanvas = ({ cartVisible, handleCartToggle }) => {
   };
 
   return (
-    <Offcanvas show={cartVisible} onHide={handleCartToggle} placement="end">
+    <Offcanvas show={cartVisible} onHide={handleCartToggle} placement="end" style={{  fontFamily:"'Poppins', sans-serif",}}>
       <Offcanvas.Body>
         {cartItems.length > 0 ? (
           <>
@@ -45,8 +45,8 @@ const CartOffcanvas = ({ cartVisible, handleCartToggle }) => {
                   }}
                 />
                 <div className="flex-grow-1">
-                  <h5>{item.name}</h5>
-                  <h5>{item.category}</h5>
+                  <h5 style={{fontSize:"14px"}}>{item.name}</h5>
+                  <h5 style={{fontSize:"14px"}}>{item.category}</h5>
                   <p>{item.price}</p>
                   <div className="d-flex align-items-center">
                     <button
@@ -74,17 +74,36 @@ const CartOffcanvas = ({ cartVisible, handleCartToggle }) => {
             ))}
             <div className="mt-4">
               <h5 className="d-flex justify-content-between">
-                <span>You Pay:</span>
-                <span>Rs. {calculateTotal()}</span>
+                <span style={{fontSize:"14px"}}>You Pay:</span>
+                <span style={{fontSize:"14px"}}>Rs. {calculateTotal()}</span>
               </h5>
               <button
-                className="btn btn-dark w-100 mt-3"
-                onClick={() =>
-                  navigate("/checkout", { state: { cartItems } })
-                }
-              >
-                CHECKOUT
-              </button>
+  className="btn btn-dark w-100 mt-3"
+  onClick={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const storedUser = JSON.parse(localStorage.getItem("user")); // Check if user exists
+
+    if (!storedUser) {
+      navigate("/profile"); 
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    } else {
+      navigate("/checkout", { state: { cartItems } }); // Proceed to checkout if logged in
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    }
+  }}
+  style={{ fontSize: "14px" }}
+>
+  CHECKOUT
+</button>
+
+
+
             </div>
           </>
         ) : (

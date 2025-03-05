@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useSelector } from "react-redux";
 import chandrisaree from "../Images/Chanderi Sarees.png";
 import { useLocation } from "react-router-dom";
+import { store } from "react-notifications-component";
 import kotasaree from "../Images/Kota.png";
 import { Offcanvas, Button } from "react-bootstrap";
 import maheshwarisilksaree from "../Images/Maheshwari Silk.png";
@@ -10,6 +11,7 @@ import handblocksaree from "../Images/Hand Block Print Sarees.png";
 import linensaree from "../Images/Linen Sarees.png";
 import vectorimage2 from "../Images/Vector_image.png";
 import { useDispatch } from "react-redux";
+// import { useLayoutEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { faSliders } from "@fortawesome/free-solid-svg-icons";
@@ -17,6 +19,8 @@ import { addToCart, removeFromCart } from "../redux/cartSlice";
 import { setSelectedProduct } from "../redux/selectedProductSlice";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 
@@ -38,6 +42,7 @@ const ShopByCategory = ({
   setCartItems,
 }) => {
   const location = useLocation();
+
   const dispatch = useDispatch();
   const handleCloseCart = () => setCartVisible(false);
   const cartItems = useSelector((state) => state.cart.items);
@@ -54,7 +59,7 @@ const ShopByCategory = ({
   console.log(parsedData, "parsedData");
 
   const [products, setProducts] = useState([]);
-  const [price, setPrice] = useState(50000);
+  const [price, setPrice] = useState(8000);
   const [color, setColor] = useState("");
   const [material, setMaterial] = useState("");
   const [cartStatus, setCartStatus] = useState({}); // Track cart status for each product
@@ -62,50 +67,114 @@ const ShopByCategory = ({
   const [Categories, setCategories] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
 
-  const handleAddToCart = (product) => {
-    // Dispatch the action to update the global cart in Redux
-    dispatch(addToCart(product));
+  // const handleAddToCart = (product) => {
+  //   // Dispatch the action to update the global cart in Redux
+  //   dispatch(addToCart(product));
 
-    // Update local state for the specific product
+  //   // Update local state for the specific product
+  //   setCartStatus((prevStatus) => ({
+  //     ...prevStatus,
+  //     [product._id]: true, // Set the cart status for the specific product
+  //   }));
+  // };
+
+  const handleAddToCart = (product) => {
+    // Check if user is logged in
+    const storedUser = localStorage.getItem("user");
+    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+  
+    if (!parsedUser || !parsedUser.id) {
+      toast.error("Please log in to add items to your cart!", {
+        position: "top-right",
+        autoClose: 2000, // ✅ Auto-close after 2 seconds
+        closeOnClick: true,
+        draggable: true,
+      });
+      navigate("/profile"); // Redirect to login page
+      return;
+    }
+  
+    // Get existing cart items from localStorage
+    let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+  
+    // Check if the product is already in the cart
+    const existingItem = cartItems.find((item) => item._id === product._id);
+    if (existingItem) {
+      cartItems = cartItems.map((item) =>
+        item._id === product._id ? { ...item, quantity: item.quantity + 1 } : item
+      );
+  setTimeout(() => {
+    toast.info("Product quantity increased in cart!", {
+      position: "top-right",
+      autoClose: 2000,
+      closeOnClick: true,
+      draggable: true,
+    });
+  }, 1000);
+      
+  
+    } else {
+      cartItems.push({ ...product, quantity: 1 });
+  setTimeout(() => {
+    toast.success("Added to Cart!", {
+      position: "top-right",
+      autoClose: 2000,
+      closeOnClick: true,
+      draggable: true,
+    });
+  }, 1000);
+    
+    }
+  
+
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  
+   
     setCartStatus((prevStatus) => ({
       ...prevStatus,
-      [product._id]: true, // Set the cart status for the specific product
+      [product._id]: true, 
     }));
+  
+    
+    dispatch(addToCart(product));
+  
+   
+    window.dispatchEvent(new Event("cartUpdated"));
   };
+  
+  
+
+  useEffect(() => {
+    const updateCartStatus = () => {
+      const storedCart = JSON.parse(localStorage.getItem("cartItems")) || [];
+      const cartStatusMap = {};
+      storedCart.forEach((item) => {
+        cartStatusMap[item._id] = true;
+      });
+      setCartStatus(cartStatusMap);
+    };
+  
+    // Listen for cart updates from other pages
+    window.addEventListener("cartUpdated", updateCartStatus);
+  
+    // Load cart status on page load
+    updateCartStatus();
+  
+    return () => {
+      window.removeEventListener("cartUpdated", updateCartStatus);
+    };
+  }, []);
+  
 
   
-  // const fetchProducts = async () => {
-  //   try {
-  //     const response = await axios.get("https://api.atoutfashion.com/api/products", {
-  //       params: {
-  //         maxPrice: price, // Filtering by max price
-  //         color: color.trim() !== "" ? color : undefined, // Only send if color is entered
-  //         material: material.trim() !== "" ? material : undefined, // Only send if material is entered
-  //       },
-  //       withCredentials: true,
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-  
-  //     const productsData = response.data.data || [];
-  //     setProducts(productsData);
-  //     setFilteredProducts(productsData);
-  //   } catch (error) {
-  //     console.error("Error fetching products:", error.message || error);
-  //   }
-  // };
-  
-  // useEffect(() => {
-  //   fetchProducts();
-  // }, [price, color, material]);
+
   const fetchProducts = async () => {
     try {
       const response = await axios.get("https://api.atoutfashion.com/api/products", {
         params: {
-          maxPrice: price, // Filtering by max price
-          color: color.trim() !== "" ? color : undefined, // Only send if color is entered
-          material: material.trim() !== "" ? material : undefined, // Only send if material is entered
+          maxPrice: price, 
+          color: color.trim() !== "" ? color : undefined, 
+          material: material.trim() !== "" ? material : undefined, 
         },
        
         headers: {
@@ -198,16 +267,17 @@ const ShopByCategory = ({
 
   const handleCheckboxChange = () => {
     setInStockOnly((prev) => {
-      const newState = !prev;
-      const filtered = newState
-        ? filteredProducts.filter((saree) => saree.stock)
-        : filteredProducts;
-        console.log("filtered in handle checkbox",filtered);
-        
-      setFilteredSarees(filtered);
-      return newState;
+      const newInStockOnly = !prev;
+  
+      // When the checkbox is checked (blue), show all products
+      // When the checkbox is unchecked, filter only in-stock products
+      const filtered = newInStockOnly ? products : products.filter(product => product.inStock);
+  
+      setFilteredProducts(filtered);
+      return newInStockOnly;
     });
   };
+  
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const currentItems = filteredProducts.slice(
@@ -256,27 +326,48 @@ const ShopByCategory = ({
   };
 
 
+  
+  useLayoutEffect(() => {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, []);
+
+  // useEffect(() => {
+  //   const updateWishlist = () => {
+  //     const storedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+  //     setWishlist(storedWishlist);
+  //   };
+  
+  //   // Listen for wishlist updates
+  //   window.addEventListener("wishlistUpdated", updateWishlist);
+  
+  //   return () => {
+  //     window.removeEventListener("wishlistUpdated", updateWishlist);
+  //   };
+  // }, []);
+  
+  
+
   const handleWishlistToggle = async (product) => {
-    if (!product) {
-      console.error("Product is undefined");
+    if (!product || !product._id) {
+      console.error("Invalid product data", product);
       return;
     }
-    if (!product._id) {
-      console.error("Product ID is missing:", product);
+  
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const userId = storedUser ? storedUser.id : null;
+  
+    if (!userId) {
+      toast.error("Please log in to manage your wishlist.", {
+        position: "top-right",
+        autoClose: 2000, 
+        closeOnClick: true,
+        draggable: true,
+      });
       return;
     }
   
     try {
-      const storedUser = localStorage.getItem("user");
-      const parsedUser = storedUser ? JSON.parse(storedUser) : null;
-      const userId = parsedUser ? parsedUser.id : null;
-  
-      if (!userId) {
-        alert("User not logged in");
-        return;
-      }
-  
-      // Call to the backend to toggle wishlist status
       const response = await fetch("https://api.atoutfashion.com/api/wishlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -284,38 +375,90 @@ const ShopByCategory = ({
       });
   
       const data = await response.json();
-      console.log("Response from backend:", data);
   
       if (response.ok) {
-        setWishlist((prevWishlist) => {
-          const productExists = prevWishlist.some(
-            (item) => item?.productId?._id === product._id
+        let updatedWishlist;
+        const storedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+        const isProductInWishlist = storedWishlist.some(
+          (item) => item?.productId?._id === product._id
+        );
+  
+        if (isProductInWishlist) {
+        
+          updatedWishlist = storedWishlist.filter(
+            (item) => item?.productId?._id !== product._id
           );
   
-          let updatedWishlist;
-          if (productExists) {
-            updatedWishlist = prevWishlist.filter(
-              (item) => item?.productId?._id !== product._id
-            );
-          } else {
-            updatedWishlist = [
-              ...prevWishlist,
-              { productId: product, status: "active" },
-            ];
-          }
+        
+          setTimeout(()=>{
+            toast.info("Removed from Wishlist", {
+              position: "top-right",
+              autoClose: 2000,
+              closeOnClick: true,
+              draggable: true,
+            });
+          },1000)
+       
+        } else {
+          // Add product to wishlist
+          updatedWishlist = [...storedWishlist, { productId: product }];
   
-          localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+          setTimeout(()=>{
+          toast.success("Added to Wishlist", {
+            position: "top-right",
+            autoClose: 2000,
+            closeOnClick: true,
+            draggable: true,
+          });
+        },1000)
+        }
   
-          return updatedWishlist;
-        });
+        // ✅ Update localStorage and state
+        localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+        setWishlist(updatedWishlist);
+  
+        // ✅ Notify all pages to update wishlist
+        window.dispatchEvent(new Event("wishlistUpdated"));
       } else {
-        alert(`Error: ${data.message || "Something went wrong"}`);
+        console.error(`Error: ${data.message}`);
+        toast.error("Failed to update wishlist", {
+          position: "top-right",
+          autoClose: 2000, // ✅ Auto-close
+          closeOnClick: true,
+          draggable: true,
+        });
       }
     } catch (error) {
       console.error("Error updating wishlist:", error);
-      alert("Failed to update wishlist, please try again.");
+      toast.error("Failed to update wishlist", {
+        position: "top-right",
+        autoClose: 2000, // ✅ Auto-close
+        closeOnClick: true,
+        draggable: true,
+      });
     }
   };
+  
+  
+  
+  
+  // ✅ Listen for wishlist updates across pages
+  useEffect(() => {
+    const updateWishlist = () => {
+      const storedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+      setWishlist(storedWishlist);
+    };
+  
+    window.addEventListener("wishlistUpdated", updateWishlist);
+  
+    return () => {
+      window.removeEventListener("wishlistUpdated", updateWishlist);
+    };
+  }, []);
+  
+  
+  
+  
   
 
 
@@ -337,7 +480,7 @@ const ShopByCategory = ({
   }, []);
 
   return (
-    <div style={{ marginTop: "8%" , overflow:'hidden'}}>
+    <div style={{ marginTop: "8%" ,  fontFamily:"'Poppins', sans-serif", }}>
       <div className="container text-center">
         <h1 className="mb-4" style={{ fontSize: "24px" }}>
           Shop by Category
@@ -465,49 +608,82 @@ const ShopByCategory = ({
             <p>Showing {products.length} products</p>
           </div>
           <div className="d-flex align-items-center">
-            <input
-              type="checkbox"
-              id="inStockCheckbox"
-              className="me-2"
-              checked={inStockOnly}
-              onChange={handleCheckboxChange}
-            />
-            <label htmlFor="inStockCheckbox" className="form-label me-3">
-              Show products in Stock
-            </label>
-            <FontAwesomeIcon
+          <input
+  type="checkbox"
+  id="inStockCheckbox"
+  className="me-2"
+  checked={inStockOnly}
+  onChange={handleCheckboxChange}
+/>
+<label htmlFor="inStockCheckbox" className="form-label me-3">
+  Show products in Stock
+</label>
+
+            {/* <FontAwesomeIcon
               icon={faSliders}
               style={{ fontSize: "20px", cursor: "pointer" }}
-            />
+            /> */}
           </div>
         </div>
 
         <div className="row">
           {/* Filter Section */}
           <div className="col-md-3">
-            <div className="filter-box border p-3">
+            <div className="filter-box border p-3" style={{marginLeft:'5%', borderRadius:'15px'}}>
               <h5>Filter By</h5>
               <div className="mb-3">
                 <label className="form-label">Price Range</label>
                 <div>
-                  <input
-                    type="range"
-                    className="form-range"
-                    min="0"
-                    max="50000"
-                    step="0"
-                    value={price}
-                    onChange={handleRangeChange}
-                    id="priceRange"
-                  />
-                  <div className="d-flex justify-content-between">
-                    <span>₹0</span>
-                    <span> ₹{price}</span>
-                  </div>
-                  {/* <div className="mt-2">
-                    <strong>Selected Price: ₹{price}</strong>
-                  </div> */}
-                </div>
+  <input
+    type="range"
+    className="custom-range form-range"
+    min="0"
+    max="8000"
+    step="1"
+    value={price}
+    onChange={handleRangeChange}
+    id="priceRange"
+  />
+  <div className="d-flex justify-content-between">
+    <span>₹0</span>
+    <span>₹{price}</span>
+  </div>
+</div>
+
+<style>
+  {`
+  .custom-range {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px; 
+    background: linear-gradient(to right, #8B5635 0%, #8B5635 ${(price / 8000) * 100}%, #ddd ${(price / 8000) * 100}%, #ddd 100%);
+    border-radius: 5px;
+    outline: none;
+    transition: background 0.3s;
+  }
+
+
+  .custom-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border: 3px solid #8B5635;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .custom-range::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border: 3px solid #8B5635;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  `}
+</style>
+
               </div>
 
               <div className="mb-3">
@@ -548,7 +724,7 @@ const ShopByCategory = ({
           <div className="col-md-9">
             <div className="row justify-content-center">
               {currentItems.map((product) => {
-                const isInCart = cartStatus[product._id] || false; // Check if this product is in the cart
+                const isInCart = cartStatus[product._id] || false; 
 
                 return (
                   <div
@@ -563,7 +739,7 @@ const ShopByCategory = ({
                         height: "444px",
                         cursor: "pointer",
                       }}
-                      onClick={() => handleProductClick(product)} // Click on the div to navigate to the description page
+                      onClick={() => handleProductClick(product)} 
                     >
                       <img
                         src={product.images[0]}
@@ -575,10 +751,10 @@ const ShopByCategory = ({
                           objectFit: "cover",
                         }}
                         onClick={(e) => {
-                          e.stopPropagation(); // Prevents triggering the outer div's onClick
-                          addToCartHandler(product); // Adds the item to the cart
-                          handleCartToggle(); // Toggle the cart
-                          navigate("/description", { state: { product } }); // Navigate to the description page
+                          e.stopPropagation(); 
+                          addToCartHandler(product); 
+                          handleCartToggle(); 
+                          navigate("/description", { state: { product } }); 
                         }}
                       />
                       <div
@@ -613,31 +789,32 @@ const ShopByCategory = ({
                           </div>
                         </div>
                         <div>
-                          <FontAwesomeIcon
-                            icon={faShoppingCart}
-                            style={{
-                              fontSize: "18px",
-                              color: isInCart ? "blue" : "white", // Change to blue if the item is in the cart
-                            }}
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevents the image click event from triggering
-                              handleAddToCart(product); // Adds or removes the item from the cart
-                            }}
-                          />
+                        <FontAwesomeIcon
+  icon={faShoppingCart}
+  style={{
+    fontSize: "18px",
+    color: cartStatus[product._id] ? "blue" : "white", // Blue if in cart
+  }}
+  onClick={(e) => {
+    e.stopPropagation();
+    handleAddToCart(product);
+  }}
+/>
+
                         </div>
                       </div>
                       <div
                         className="position-absolute top-0 end-0 m-2"
                         style={{ zIndex: 10 }}
                       >
-                   {product && product._id && (
+                 {product && product._id && (
   <FontAwesomeIcon
     icon={faHeart}
     style={{
       fontSize: "20px",
-      color: validWishlist.some((item) => item.productId._id === product?._id)
+      color: wishlist.some((item) => item?.productId?._id === product._id)
         ? "red"
-        : "#fff",
+        : "#D3D3D3",
     }}
     onClick={(e) => {
       e.stopPropagation();
@@ -647,7 +824,20 @@ const ShopByCategory = ({
 )}
 
 
+
                       </div>
+                      <ToastContainer 
+  position="top-right"
+  autoClose={2000}  // ✅ Auto close after 2 seconds
+  hideProgressBar={false}
+  newestOnTop={false}
+  closeOnClick
+  rtl={false}
+  pauseOnFocusLoss={false}  // ✅ Prevent pause on focus loss
+  draggable
+  pauseOnHover={false}  // ✅ Prevent pause on hover
+/>
+
                     </div>
                   </div>
                 );
@@ -656,85 +846,27 @@ const ShopByCategory = ({
 
             {/* Pagination Controls */}
             <div className="d-flex justify-content-center mt-4">
-              {[...Array(totalPages)].map((_, index) => (
-                <button
-                  key={index}
-                  className={`btn btn-outline-primary mx-2 ${
-                    currentPage === index + 1 ? "active" : ""
-                  }`}
-                  onClick={() => setCurrentPage(index + 1)}
-                >
-                  {index + 1}
-                </button>
-              ))}
-            </div>
+  {[...Array(totalPages)].map((_, index) => (
+    <button
+      key={index}
+      className={`btn mx-2 ${currentPage === index + 1 ? "active" : ""}`}
+      onClick={() => setCurrentPage(index + 1)}
+      style={{
+        backgroundColor: currentPage === index + 1 ? "#522C1B" : "transparent",
+        color: currentPage === index + 1 ? "white" : "#522C1B",
+        border: "1px solid #522C1B",
+        padding: "8px 12px",
+        borderRadius: "5px",
+        transition: "all 0.3s ease",
+      }}
+    >
+      {index + 1}
+    </button>
+  ))}
+</div>
 
-            {/* Offcanvas Cart
-        <Offcanvas show={cartVisible} onHide={handleCartToggle} placement="end">
-          <Offcanvas.Body>
-            {cartItems.length > 0 ? (
-              <>
-                {cartItems.map((item, index) => (
-                  <div
-                    key={index}
-                    className="d-flex align-items-center mb-3 border-bottom pb-3"
-                  >
-                    <img
-                      src={item.src}
-                      alt={item.title}
-                      style={{
-                        width: "80px",
-                        objectFit: "cover",
-                        marginRight: "15px",
-                      }}
-                    />
-                    <div className="flex-grow-1">
-                      <h5>{item.title}</h5>
-                      <p>{item.price}</p>
-                      <div className="d-flex align-items-center">
-                        <button
-                          className="btn btn-outline-secondary btn-sm"
-                          onClick={() => handleQuantityChange(item, -1)}
-                        >
-                          -
-                        </button>
-                        <span className="mx-2">{item.quantity || 1}</span>
-                        <button
-                          className="btn btn-outline-secondary btn-sm"
-                          onClick={() => handleQuantityChange(item, 1)}
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() => handleRemoveItem(item)}
-                    >
-                      <i className="fas fa-trash"></i>
-                    </button>
-                  </div>
-                ))}
-                <div className="mt-4">
-                  <h5 className="d-flex justify-content-between">
-                    <span>You Pay:</span>
-                    <span>Rs. {calculateTotal()}</span>
-                  </h5>
-                  <button
-                    className="btn btn-dark w-100 mt-3"
-                    onClick={() =>
-                      navigate("/checkout", { state: { cartItems } })
-                    }
-                  >
-                    CHECKOUT
-                  </button>
-                </div>
-              </>
-            ) : (
-              <p>Your cart is empty.</p>
-            )}
-          </Offcanvas.Body>
-        </Offcanvas> */}
+
+           
           </div>
         </div>
       </div>

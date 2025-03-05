@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import OffcanvasCart from "../Component/OffcanvasCart"; // Import OffcanvasCart
 import { Button } from "react-bootstrap";
@@ -23,8 +23,36 @@ const CartPage = () => {
 
   // Remove item from cart
   const handleRemoveItem = (item) => {
-    setCartItems((prevItems) => prevItems.filter((cartItem) => cartItem.id !== item.id));
+    // Get cart items from localStorage
+    let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+  
+    // Remove the item
+    cartItems = cartItems.filter((cartItem) => cartItem._id !== item._id);
+  
+    // Update localStorage
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  
+    // Update local state
+    setCartItems(cartItems);
+  
+    // Notify other pages to update cart status
+    window.dispatchEvent(new Event("cartUpdated"));
   };
+  useEffect(() => {
+    const updateCartItems = () => {
+      const storedCart = JSON.parse(localStorage.getItem("cartItems")) || [];
+      setCartItems(storedCart);
+    };
+  
+    window.addEventListener("cartUpdated", updateCartItems);
+  
+    updateCartItems(); // Load cart on page load
+  
+    return () => {
+      window.removeEventListener("cartUpdated", updateCartItems);
+    };
+  }, []);
+    
 
   // Calculate total price
   const calculateTotal = () => {

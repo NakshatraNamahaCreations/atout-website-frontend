@@ -54,31 +54,35 @@ const WishlistPage = () => {
 
   const handleRemoveFromWishlist = async (productId) => {
     try {
-      const storedUser = localStorage.getItem("user");
-      const parsedUser = storedUser ? JSON.parse(storedUser) : null;
-      const userId = parsedUser ? parsedUser.id : null;
-
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      const userId = storedUser ? storedUser.id : null;
+  
       if (!userId) {
         alert("User not logged in");
         return;
       }
-
+  
       await fetch("https://api.atoutfashion.com/api/wishlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, productId, status: "inactive" }),
       });
-
-      setWishlist(prevWishlist => prevWishlist.filter(item => item.productId._id !== productId));
-      setWishlistItems(prevItems => {
-        const updatedItems = { ...prevItems };
-        delete updatedItems[productId];
-        return updatedItems;
-      });
+  
+      // ✅ Update local state
+      const updatedWishlist = wishlist.filter((item) => item.productId._id !== productId);
+      setWishlist(updatedWishlist);
+  
+      // ✅ Update localStorage
+      localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+  
+      // ✅ Notify other pages (like `ShopByCategory`) to update
+      window.dispatchEvent(new Event("wishlistUpdated"));
     } catch (error) {
       console.error("Error removing item from wishlist:", error);
     }
   };
+  
+  
 
   const dispatch = useDispatch(); // Import from redux
   const cartItems = useSelector(state => state.cart.items); // Get cart state
@@ -125,8 +129,14 @@ const WishlistPage = () => {
   }, []);
 
   return (
-    <div style={{ marginTop: "8%" }}>
-    <h2 style={{textAlign:'center'}}>My Wishlist</h2>
+    <div  style={{ 
+      display: "flex", 
+      flexDirection: "column", 
+      minHeight: "50vh",
+      fontFamily:"'Poppins', sans-serif",
+      marginTop:'7%' 
+    }}>
+    <h2 style={{textAlign:'center', fontFamily:'poppins'}}>My Wishlist</h2>
     <div className="row">
       {wishlist.length > 0 ? (
         wishlist.map((item) => {

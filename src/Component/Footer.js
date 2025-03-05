@@ -31,10 +31,10 @@ function Footer() {
         <div className="col-md-3" style={{ marginTop: '1%' }}>
   <h4 className="footer-heading">Help</h4>
   <div>
-    <a href="#" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '10px' }}>
+    <a href="#" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '' }}>
       Shipping Policy
     </a>
-    <a href="#" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '10px' }}>
+    <a href="#" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '' }}>
       Refund/Return Policy
     </a>
     <a href="#" style={{ display: 'block', color: 'white', textDecoration: 'none' }}>
@@ -47,16 +47,16 @@ function Footer() {
 <div className="col-md-3" style={{ marginTop: '1%' }}>
   <h4 className="footer-heading">Quick Links</h4>
   <div>
-    <a href="/" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '10px' }}>
+    <a href="/" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '' }}>
       Home
     </a>
-    <a href="/about-us" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '10px' }}>
+    <a href="/about-us" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '' }}>
       About Us
     </a>
-    <a href="/shop" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '10px' }}>
+    <a href="/shop" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '' }}>
       Shop
     </a>
-    <a href="/contact-us" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '10px' }}>
+    <a href="/contact-us" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '' }}>
       Contact Us
     </a>
     {/* <a href="#" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '10px' }}>
@@ -71,16 +71,16 @@ function Footer() {
 <div className="col-md-3" style={{ marginTop: '1%' }}>
   <h4 className="footer-heading">Connect With Us!</h4>
   <div>
-    <a href="mailto:contact@atoutfashion.com" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '10px' }}>
+    <a href="mailto:contact@atoutfashion.com" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '' }}>
       <i className="fas fa-envelope"></i> contact@atoutfashion.com
     </a>
     <a href="tel:+1234567890" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '10px' }}>
       <i className="fas fa-mobile-alt"></i> +91 82962 68061
     </a>
   </div>
-  <div style={{ marginTop: '20px', color: 'white' }}>
-    <p>Be the First to Know!</p>
-    <p style={{fontFamily:'Satisfy'}}>Subscribe to our Newsletter for latest updates</p>
+  <div style={{ marginTop: 'px', color: 'white', marginBottom:'10px' }}>
+    <p style={{marginBottom:'1px'}}>Be the First to Know!</p>
+    <p style={{fontFamily:'Satisfy', whiteSpace:'nowrap'}}>Subscribe to our Newsletter for latest updates</p>
     <div style={{ display: 'flex', marginTop: '10px' }}>
       <input 
         type="email" 
@@ -102,9 +102,11 @@ function Footer() {
     </div>
   </div>
 </div>
+<br/>
 
       </div>
     </div>
+    <br/>
     {/* <div className="footer-bottom">
       <p className="footer-text">© 2023 Atout By Supriya. All rights reserved.</p>
     </div> */}
