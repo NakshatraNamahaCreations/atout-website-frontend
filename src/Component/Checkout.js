@@ -320,7 +320,7 @@ const Checkout = () => {
       <div key={index} className="d-flex align-items-center mb-3 border-bottom pb-3">
         <img src={item.images[0]} alt={item.name} style={{ width: "80px", height: "auto", objectFit: "cover", marginRight: "15px", borderRadius: "5px" }} />
         <div>
-          <h5 style={{ fontSize: "14px", margin: "0" }}>{item.category}</h5>
+          <h5 style={{ fontSize: "14px", margin: "0" }}>{item.name}</h5>
           <p style={{ margin: "0", color: "#555", fontSize: "14px" }}>Price: Rs. {item.price} x {item.quantity || 1}</p>
           <p style={{ margin: "0", fontWeight: "bold", color: "#333" , fontSize: "14px"}}>Total: Rs. {item.price * (item.quantity || 1)}</p>
         </div>
