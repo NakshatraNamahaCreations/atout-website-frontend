@@ -969,7 +969,7 @@ const fetchOrders = async () => {
       </h5>
 
       <p style={{ fontSize: "15px", color: "#666", textAlign: "center", marginBottom: "12px" }}>
-        {selectedProduct.details ||
+        {selectedProduct.category ||
           "A beautifully handcrafted saree made from premium fabric, featuring intricate designs and vibrant colors that add a touch of elegance to any occasion."}
       </p>
 
@@ -990,7 +990,7 @@ const fetchOrders = async () => {
             backgroundColor: "#f9f9f9",
           }}
         >
-          <strong>Category:</strong> {selectedProduct.category }
+          <strong>Details:</strong> {selectedProduct.details }
         </div>
         <div
           style={{
