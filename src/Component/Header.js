@@ -35,10 +35,7 @@ const Header = () => {
     setDropdownOpen(!dropdownOpen); // Toggle dropdown on click
   };
 
-  const handleNavigateProfile = () => {
-    navigate("/profile");
-    setDropdownOpen(false); // Close dropdown after navigation
-  };
+ 
 
   const handleNavigate = (path) => {
     navigate(path);
@@ -104,7 +101,12 @@ const Header = () => {
               <ul className="nav">
                 <li className="nav-item"><Link to="/" className={`nav-link ${activeLink === "/" ? "text-warning fw-bold" : "text-dark"}`} onClick={() => handleLinkClick("/")}>Home</Link></li>
                 <li className="nav-item"><Link to="/about-us" className={`nav-link ${activeLink === "/about-us" ? "text-warning fw-bold" : "text-dark"}`} onClick={() => handleLinkClick("/about-us")}>About Us</Link></li>
-                <li className="nav-item"><Link to="/shop" className={`nav-link ${activeLink === "/shop" ? "text-warning fw-bold" : "text-dark"}`} onClick={() => handleLinkClick("/shop")}>Shop</Link></li>
+                <li className="nav-item"><Link to="/shop" className={`nav-link ${activeLink === "/shop" ? "text-warning fw-bold" : "text-dark"}`}   onClick={() => {
+      handleLinkClick("/shop"); 
+      setTimeout(() => {
+        window.location.reload();
+      }, 100); 
+    }}>Shop</Link></li>
                 <li className="nav-item"><Link to="/contact-us" className={`nav-link ${activeLink === "/contact-us" ? "text-warning fw-bold" : "text-dark"}`} onClick={() => handleLinkClick("/contact-us")}>Contact Us</Link></li>
               </ul>
             </nav>

@@ -136,7 +136,7 @@ const WishlistPage = () => {
       fontFamily:"'Poppins', sans-serif",
       marginTop:'7%' 
     }}>
-    <h2 style={{textAlign:'center', fontFamily:'poppins'}}>My Wishlist</h2>
+    <h2 style={{textAlign:'center',  fontFamily: "'Poppins', sans-serif"}}>My Wishlist</h2>
     <div className="row">
       {wishlist.length > 0 ? (
         wishlist.map((item) => {

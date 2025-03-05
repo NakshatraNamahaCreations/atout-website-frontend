@@ -80,7 +80,7 @@ const DashboardPage = () => {
   
 
   return (
-    <div className="container py-4" style={{ fontFamily: "'Poppins', sans-serif", marginTop: "5%" }}>
+    <div className="container py-4" style={{ fontFamily: "'Poppins', sans-serif", marginTop: "6%" }}>
       {user ? (
         <div className="row justify-content-center">
           {/* Sidebar Section */}

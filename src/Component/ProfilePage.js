@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import login from "../Images/login.png";
 import axios from "axios";
@@ -19,13 +19,21 @@ const ProfilePage = () => {
   const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
-    // Check if user is already logged in
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) {
-      // Redirect to the dashboard if the user is logged in
+      
       navigate("/dashboard");
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 100);
     }
   }, [navigate]);
+
+
+    useLayoutEffect(() => {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, []);
 
   const handleToggle = () => {
     setIsLogin(!isLogin);
@@ -102,34 +110,37 @@ const ProfilePage = () => {
             // Save user data in localStorage
             localStorage.setItem("user", JSON.stringify(response.data.user));
 
-            // Redirect to dashboard
-            navigate("/dashboard");
+
+            navigate("/");
+            setTimeout(() => {
+                window.location.reload();
+              }, 100);
         } else {
-            // Register API Call with FormData (for image support)
+           
             const response = await axios.post("https://api.atoutfashion.com/api/customers/register", formDataToSend, {
-                headers: { "Content-Type": "multipart/form-data" } // Required for file upload
+                headers: { "Content-Type": "multipart/form-data" } 
             });
 
             setSuccessMessage(response.data.message);
 
-            // Save user data in localStorage
+     
             localStorage.setItem("user", JSON.stringify(response.data.user));
 
-            // Reset the form
+         
             setFormData({ name: "", email: "", mobileNumber: "", address: "", password: "", image: null });
 
             const userId = response.data.user.id;
 
-            // Add address after successful registration
-            // if (userId && formData.address) {
-            //     await handleAddAddress(userId, formData.address);
-            // }
+         
 
-            // Switch to login mode
+            
             setIsLogin(true);
 
-            // Redirect to dashboard
-            navigate("/dashboard");
+           
+            navigate("/");
+            setTimeout(() => {
+                window.location.reload();
+              }, 100);
         }
     } catch (error) {
         console.error("Error:", error.response ? error.response.data : error.message);
