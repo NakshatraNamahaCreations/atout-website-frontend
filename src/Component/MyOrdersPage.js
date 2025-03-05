@@ -56,11 +56,12 @@ const MyOrdersPage = () => {
   };
 
   return (
-    <div className=""style={{  display: "flex", 
+    <div className="py-3"style={{  display: "flex", 
       flexDirection: "column", 
       minHeight: "50vh",
       fontFamily:"'Poppins', sans-serif",
-      marginTop:'7%'}}>
+      marginTop:'7%',
+      marginLeft:'5%'}}>
       <h2 className="mb-4">My Orders</h2>
       {userOrders.length > 0 ? (
         <div className="row">

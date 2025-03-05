@@ -23,7 +23,7 @@ import image3 from "../Images/cutimages/image3.png";
 import image4 from "../Images/cutimages/image4.png";
 import { useNavigate } from "react-router-dom"; 
 import { useSelector } from "react-redux";
-
+import { Check, Clipboard } from "lucide-react";
 import { setSelectedProduct, selectSelectedProduct } from "../redux/selectedProductSlice";
 
 
@@ -58,6 +58,7 @@ const DescriptionPage = ({product}) => {
   const [selectedProduct, setSelectedProductState] = useState(
     location.state?.product || selectedProductFromRedux || JSON.parse(localStorage.getItem("selectedProduct"))
   );
+  const [copiedCode, setCopiedCode] = useState("");
   const cartItems = useSelector((state) => state.cart.items); 
   const [allOrders, setAllOrders] = useState([]);
   const [selectedImage, setSelectedImage] = useState(selectedProduct.images[0]);
@@ -194,61 +195,47 @@ const fetchOrders = async () => {
   
   const copyToClipboard = (code, voucherData) => {
     if (!code) {
-      toast.error("No voucher code found!", {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      toast.error("No voucher code found!", { position: "top-right", autoClose: 2000 });
       return;
     }
-  
-    // Check if voucherData is undefined or empty
+
     if (!voucherData || !Array.isArray(voucherData) || voucherData.length === 0) {
-      toast.error("Voucher data is missing!", {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      toast.error("Voucher data is missing!", { position: "top-right", autoClose: 2000 });
       return;
     }
-  
-    // Copy the voucher code to the clipboard
+
     navigator.clipboard.writeText(code);
-  
-    // Retrieve saved vouchers from localStorage
     let savedVouchers = JSON.parse(localStorage.getItem("voucher")) || [];
-  
-    // Ensure savedVouchers is always an array
+
     if (!Array.isArray(savedVouchers)) {
       savedVouchers = [];
     }
-  
-    // Find the selected voucher
+
     const selectedVoucher = voucherData.find((v) => v.voucherCode === code);
-  
+
     if (selectedVoucher) {
-      // Avoid duplicate entries
       if (!savedVouchers.some((v) => v.voucherCode === code)) {
         savedVouchers.push(selectedVoucher);
         localStorage.setItem("voucher", JSON.stringify(savedVouchers));
-  
-        // Show success toast notification
-        toast.success("Voucher code copied", {
-          position: "top-right",
-          autoClose: 2000,
-        });
+
+        toast.success("Voucher code copied", { position: "top-right", autoClose: 2000 });
       } else {
-        // Show info toast if already saved
-        toast.info("Voucher already saved!", {
-          position: "top-right",
-          autoClose: 2000,
-        });
+        toast.info("Voucher already saved!", { position: "top-right", autoClose: 2000 });
       }
+
+      // Set copied state
+      setCopiedCode(code);
+
+      // Reset after 2 seconds
+      setTimeout(() => {
+        setCopiedCode("");
+      }, 2000);
     } else {
-      toast.error("Voucher not found!", {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      toast.error("Voucher not found!", { position: "top-right", autoClose: 2000 });
     }
   };
+
+  const voucher = voucherData?.[activeSlide - 1];
   
 
   // Auto-slide effect every 3 seconds
@@ -835,14 +822,14 @@ const fetchOrders = async () => {
   </div>
 
   {/* Best Offers Section */}
-  <div
+  {/* <div
       style={{
         padding: "15px",
         textAlign: "center",
         borderRadius: "8px",
         border: "1px solid #ddd",
         backgroundColor: "#fff",
-        // maxWidth: "600px",
+   
         margin: "auto",
         height: "auto",
         marginTop: "3%",
@@ -888,7 +875,7 @@ const fetchOrders = async () => {
         </span>
       </div>
 
-      {/* Navigation Dots */}
+  
       <div
         style={{
           display: "flex",
@@ -915,8 +902,42 @@ const fetchOrders = async () => {
         ))}
       </div>
 
-      {/* Toast Container */}
+
       <ToastContainer />
+    </div> */}
+    <div
+      style={{
+        padding: "15px",
+        display: "flex",
+        flexDirection: "column",
+        borderRadius: "8px",
+        border: "1px dashed #6fc3c8",
+        backgroundColor: "#f9fdfd",
+        // width: "fit-content",
+        margin: "auto",
+        height: "auto",
+        marginTop: "20px",
+        boxShadow: "0px 2px 8px rgba(0,0,0,0.1)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+        }}
+      >
+        <strong style={{ fontSize: "16px", color: "#000" }}>{voucher?.voucherCode || "N/A"}</strong>
+        {copiedCode === voucher?.voucherCode ? (
+          <Check size={18} color="green" />
+        ) : (
+          <Clipboard size={18} style={{ cursor: "pointer" }} onClick={() => copyToClipboard(voucher?.voucherCode, voucherData)} />
+        )}
+      </div>
+
+      <p style={{ fontSize: "14px", color: "#444", marginTop: "5px" }}>
+        Get <strong>₹200</strong> off on your first order over <strong>₹2499</strong>
+      </p>
     </div>
 
 <br/>
