@@ -37,26 +37,37 @@ const Checkout = () => {
 
   useEffect(() => {
     const savedVouchers = JSON.parse(localStorage.getItem("voucher")) || [];
+    console.log("Saved Vouchers in Local Storage:", savedVouchers);
     
-    // Ensure savedVouchers is always an array
+  
     setVoucherData(Array.isArray(savedVouchers) ? savedVouchers : [savedVouchers]);
-  }, []); // Empty dependency array ensures this runs only once
+  }, []);
+  
   
   
 
   console.log(parsedData, "parsedData");
   const applyVoucher = () => {
-    const selectedVoucher = voucherData.find((v) => v.voucherCode === voucherCode);
+    console.log("Available Vouchers in State:", voucherData);
+    console.log("Entered Voucher Code:", voucherCode);
+  
+    const selectedVoucher = voucherData.find(
+      (v) => v.voucherCode.toLowerCase().trim() === voucherCode.toLowerCase().trim()
+    );
   
     if (selectedVoucher) {
+      console.log("Voucher Found:", selectedVoucher);
       const discountPercentage = parseFloat(selectedVoucher.discountPercentage) / 100;
       const subtotal = cartItems.reduce((total, item) => total + item.price * (item.quantity || 1), 0);
+  
       setAppliedVoucher(selectedVoucher);
       setDiscount(subtotal * discountPercentage);
     } else {
+      console.log("Invalid Voucher Code Entered");
       alert("Invalid Voucher Code");
     }
   };
+  
   
 
     useLayoutEffect(() => {
@@ -339,7 +350,7 @@ const Checkout = () => {
         </h5>
       )} */}
       {appliedVoucher ? (
-  <h5 className="text-success"  style={{fontSize:'12px'}}>Coupon Applied: {appliedVoucher.voucherCode}</h5>
+  <h5 className="text-success"  style={{fontSize:'12px'}}>Coupon Applied: {appliedVoucher.voucherCode} ({appliedVoucher.discountPercentage}% Off)</h5>
 ) : (
   <h5 className="text-danger"  style={{fontSize:'12px'}}>No Coupon Applied</h5>
 )}

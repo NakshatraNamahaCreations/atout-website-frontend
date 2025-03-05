@@ -134,10 +134,10 @@ const WishlistPage = () => {
       flexDirection: "column", 
       minHeight: "50vh",
       fontFamily:"'Poppins', sans-serif",
-      marginTop:'7%' 
+      marginTop:'8%' 
     }}>
     <h2 style={{textAlign:'center',  fontFamily: "'Poppins', sans-serif"}}>My Wishlist</h2>
-    <div className="row">
+    <div className="row" style={{marginLeft:'2%'}}>
       {wishlist.length > 0 ? (
         wishlist.map((item) => {
           const product = item.productId || {};

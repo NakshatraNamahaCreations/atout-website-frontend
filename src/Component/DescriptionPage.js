@@ -23,7 +23,7 @@ import image3 from "../Images/cutimages/image3.png";
 import image4 from "../Images/cutimages/image4.png";
 import { useNavigate } from "react-router-dom"; 
 import { useSelector } from "react-redux";
-import { Check, Clipboard } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import { setSelectedProduct, selectSelectedProduct } from "../redux/selectedProductSlice";
 
 
@@ -193,58 +193,52 @@ const fetchOrders = async () => {
     }
   };
   
-  const copyToClipboard = (code, voucherData) => {
+  const copyToClipboard = (code) => {
     if (!code) {
       toast.error("No voucher code found!", { position: "top-right", autoClose: 2000 });
       return;
     }
-
-    if (!voucherData || !Array.isArray(voucherData) || voucherData.length === 0) {
-      toast.error("Voucher data is missing!", { position: "top-right", autoClose: 2000 });
-      return;
-    }
-
+  
     navigator.clipboard.writeText(code);
+    setCopiedCode(code);
+    toast.success("Voucher code copied!", { position: "top-right", autoClose: 2000 });
+  
+    // Retrieve existing vouchers from localStorage
     let savedVouchers = JSON.parse(localStorage.getItem("voucher")) || [];
-
+  
+    // Ensure it's always an array
     if (!Array.isArray(savedVouchers)) {
-      savedVouchers = [];
+      savedVouchers = [savedVouchers];
     }
-
+  
+    // Check if the voucher is already saved
     const selectedVoucher = voucherData.find((v) => v.voucherCode === code);
-
+  
     if (selectedVoucher) {
+      // Avoid duplicate entries
       if (!savedVouchers.some((v) => v.voucherCode === code)) {
         savedVouchers.push(selectedVoucher);
         localStorage.setItem("voucher", JSON.stringify(savedVouchers));
-
-        toast.success("Voucher code copied", { position: "top-right", autoClose: 2000 });
-      } else {
-        toast.info("Voucher already saved!", { position: "top-right", autoClose: 2000 });
       }
-
-      // Set copied state
-      setCopiedCode(code);
-
-      // Reset after 2 seconds
-      setTimeout(() => {
-        setCopiedCode("");
-      }, 2000);
-    } else {
-      toast.error("Voucher not found!", { position: "top-right", autoClose: 2000 });
     }
+  
+    setTimeout(() => {
+      setCopiedCode("");
+    }, 2000);
   };
-
-  const voucher = voucherData?.[activeSlide - 1];
   
 
-  // Auto-slide effect every 3 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveSlide((prev) => (prev % voucherData.length) + 1);
-    }, 3000);
-    return () => clearInterval(interval); // Cleanup interval on unmount
-  }, [voucherData.length]);
+
+  // const voucher = voucherData?.[activeSlide - 1];
+  
+
+  // // Auto-slide effect every 3 seconds
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setActiveSlide((prev) => (prev % voucherData.length) + 1);
+  //   }, 3000);
+  //   return () => clearInterval(interval); // Cleanup interval on unmount
+  // }, [voucherData.length]);
   
 
   useEffect(() => {
@@ -534,7 +528,7 @@ const fetchOrders = async () => {
       <div
         style={{
           position: "relative",
-          height: "400px",
+          // height: "400px",
           marginBottom: "20px",
           overflow: "hidden",
           cursor: "zoom-in",
@@ -905,39 +899,40 @@ const fetchOrders = async () => {
 
       <ToastContainer />
     </div> */}
-    <div
-      style={{
-        padding: "15px",
-        display: "flex",
-        flexDirection: "column",
-        borderRadius: "8px",
-        border: "1px dashed #6fc3c8",
-        backgroundColor: "#f9fdfd",
-        // width: "fit-content",
-        margin: "auto",
-        height: "auto",
-        marginTop: "20px",
-        boxShadow: "0px 2px 8px rgba(0,0,0,0.1)",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-        }}
-      >
-        <strong style={{ fontSize: "16px", color: "#000" }}>{voucher?.voucherCode || "N/A"}</strong>
-        {copiedCode === voucher?.voucherCode ? (
-          <Check size={18} color="green" />
-        ) : (
-          <Clipboard size={18} style={{ cursor: "pointer" }} onClick={() => copyToClipboard(voucher?.voucherCode, voucherData)} />
-        )}
-      </div>
-
-      <p style={{ fontSize: "14px", color: "#444", marginTop: "5px" }}>
-        Get <strong>₹200</strong> off on your first order over <strong>₹2499</strong>
-      </p>
+   <div style={{ display: "flex", justifyContent: "center", gap: "15px", flexWrap: "wrap", marginTop: "20px" }}>
+      {voucherData.slice(0, 3).map((voucher) => (
+        <div
+          key={voucher._id}
+          style={{
+            padding: "15px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            borderRadius: "8px",
+            border: "1px solid #6fc3c8",
+            backgroundColor: "#f9fdfd",
+            width: "230px",
+            height: "80px",
+            boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
+            transition: "transform 0.2s ease-in-out",
+            cursor: "pointer",
+            justifyContent: "space-between",
+            textAlign: "center"
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+            <strong style={{ fontSize: "16px", color: "#000" }}>{voucher.voucherCode}</strong>
+            {copiedCode === voucher.voucherCode ? (
+              <Check size={18} color="green" />
+            ) : (
+              <Copy size={18} style={{ cursor: "pointer" }} onClick={() => copyToClipboard(voucher.voucherCode)} />
+            )}
+          </div>
+          <p style={{ fontSize: "14px", color: "#444", margin: 0, textAlign: "center" }}>
+            Get <strong>{voucher.discountPercentage}%</strong> off - {voucher.desc}
+          </p>
+        </div>
+      ))}
     </div>
 
 <br/>
@@ -992,7 +987,7 @@ const fetchOrders = async () => {
         >
           <strong>Details:</strong> {selectedProduct.details }
         </div>
-        <div
+        {/* <div
           style={{
             padding: "10px",
             borderRadius: "6px",
@@ -1000,7 +995,7 @@ const fetchOrders = async () => {
           }}
         >
           <strong>Width:</strong> {selectedProduct.width }
-        </div>
+        </div> */}
         <div
           style={{
             padding: "10px",

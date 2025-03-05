@@ -5,6 +5,7 @@ import chandrisaree from "../Images/Chanderi Sarees.png";
 import { useLocation } from "react-router-dom";
 import { store } from "react-notifications-component";
 import kotasaree from "../Images/Kota.png";
+import ReactSlider from "react-slider";
 import { Offcanvas, Button } from "react-bootstrap";
 import maheshwarisilksaree from "../Images/Maheshwari Silk.png";
 import handblocksaree from "../Images/Hand Block Print Sarees.png";
@@ -239,14 +240,28 @@ const ShopByCategory = ({
     });
   };
 
-  const handleRangeChange = (e) => {
-    setPrice(e.target.value);
+  // const handleRangeChange = (e) => {
+  //   setPrice(e.target.value);
+  //   const filteredByPrice = products.filter((saree) => {
+  //     const priceValue = parseFloat(String(saree.price).replace(/[^0-9.-]+/g, ""));
+  //     return priceValue <= e.target.value;
+  //   });
+  //   setFilteredSarees(filteredByPrice);
+  // };
+  const [priceRange, setPriceRange] = useState([0, 8000]);
+  const handleRangeChange = (newRange) => {
+    setPriceRange(newRange);
+  
+    if (!Array.isArray(products) || products.length === 0) return; // Prevent errors if products are empty or undefined
+  
     const filteredByPrice = products.filter((saree) => {
       const priceValue = parseFloat(String(saree.price).replace(/[^0-9.-]+/g, ""));
-      return priceValue <= e.target.value;
+      return !isNaN(priceValue) && priceValue >= newRange[0] && priceValue <= newRange[1];
     });
+  
     setFilteredSarees(filteredByPrice);
   };
+  
   
 
   const handleCartToggle = () => {
@@ -611,12 +626,13 @@ const ShopByCategory = ({
           <input
   type="checkbox"
   id="inStockCheckbox"
+  width={100}
   className="me-2"
   checked={inStockOnly}
   onChange={handleCheckboxChange}
 />
-<label htmlFor="inStockCheckbox" className="form-label me-3">
-  Show products in Stock
+<label htmlFor="inStockCheckbox" className="form-label me-3"style={{marginTop:'4%'}}>
+  Show all products 
 </label>
 
             {/* <FontAwesomeIcon
@@ -631,60 +647,80 @@ const ShopByCategory = ({
           <div className="col-md-3">
             <div className="filter-box border p-3" style={{marginLeft:'5%', borderRadius:'15px'}}>
               <h5>Filter By</h5>
-              <div className="mb-3">
-                <label className="form-label">Price Range</label>
-                <div>
-  <input
-    type="range"
-    className="custom-range form-range"
-    min="0"
-    max="8000"
-    step="1"
-    value={price}
-    onChange={handleRangeChange}
-    id="priceRange"
-  />
-  <div className="d-flex justify-content-between">
-    <span>₹0</span>
-    <span>₹{price}</span>
-  </div>
-</div>
+              <div className="mb-4">
+      <label className="block text-lg font-semibold mb-2">Price Range</label>
 
-<style>
-  {`
-  .custom-range {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 6px; 
-    background: linear-gradient(to right, #8B5635 0%, #8B5635 ${(price / 8000) * 100}%, #ddd ${(price / 8000) * 100}%, #ddd 100%);
-    border-radius: 5px;
-    outline: none;
-    transition: background 0.3s;
-  }
+      {/* React Slider Component */}
+      <ReactSlider
+        className="custom-slider"
+        thumbClassName="custom-thumb"
+        trackClassName="custom-track"
+        value={priceRange}
+        min={0}
+        max={8000}
+        step={1}
+        onChange={handleRangeChange}
+        renderTrack={(props, state) => (
+          <div
+            {...props}
+            className={`custom-track ${state.index === 1 ? "selected-track" : ""}`}
+          />
+        )}
+      />
 
+      {/* Price Display */}
+      <div className="flex justify-between text-sm mt-3">
+        <span className="font-bold">₹{priceRange[0]}</span>
 
-  .custom-range::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    background-color: white;
-    border: 3px solid #8B5635;
-    border-radius: 50%;
-    cursor: pointer;
-  }
+        <span className="font-bold" style={{marginLeft:'65%'}}>₹{priceRange[1]}</span>
+      </div>
 
-  .custom-range::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    background-color: white;
-    border: 3px solid #8B5635;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-  `}
-</style>
+ 
+      <style>
+        {`
+          /* Main slider track */
+          .custom-slider {
+            width: 100%;
+            height: 6px;
+            background: #ddd; 
+            border-radius: 5px;
+            position: relative;
+          }
 
-              </div>
+          /* Default track (not selected) */
+          .custom-track {
+            height: 6px;
+            border-radius: 5px;
+          }
+
+          /* Selected track (between two thumbs) */
+          .selected-track {
+            background: #8B5635 !important; 
+          }
+
+          /* Thumb (slider handle) */
+          .custom-thumb {
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border: 3px solid #8B5635;
+            border-radius: 50%;
+            cursor: pointer;
+            outline: none;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: 50%;
+            transform: translateY(-50%);
+          }
+
+          .custom-thumb:hover {
+            transform: scale(1.1) translateY(-50%);
+          }
+        `}
+      </style>
+    </div>
 
               <div className="mb-3">
       <label className="form-label">Color</label>
