@@ -60,13 +60,15 @@ const ShopByCategory = ({
   console.log(parsedData, "parsedData");
 
   const [products, setProducts] = useState([]);
-  const [price, setPrice] = useState(8000);
+  // const [price, setPrice] = useState(8000);
   const [color, setColor] = useState("");
   const [material, setMaterial] = useState("");
   const [cartStatus, setCartStatus] = useState({}); // Track cart status for each product
   const [wishlist, setWishlist] = useState([]);
   const [Categories, setCategories] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [price, setPriceRange] = useState([0, 8000]);
+  const [displayedProductCount, setDisplayedProductCount] = useState(0);
 
   // const handleAddToCart = (product) => {
   //   // Dispatch the action to update the global cart in Redux
@@ -169,22 +171,25 @@ const ShopByCategory = ({
 
   
 
+
+
+
   const fetchProducts = async () => {
     try {
       const response = await axios.get("https://api.atoutfashion.com/api/products", {
         params: {
-          maxPrice: price, 
-          color: color.trim() !== "" ? color : undefined, 
-          material: material.trim() !== "" ? material : undefined, 
+          minPrice: price[0], // Corrected
+          maxPrice: price[1], // Corrected
+          color: color.trim() !== "" ? color : undefined,
+          material: material.trim() !== "" ? material : undefined,
         },
-       
         headers: {
           "Content-Type": "application/json",
         },
       });
-  
+
       let productsData = response.data.data || [];
-  
+
       // Apply search filter
       if (searchQuery) {
         const lowerCaseQuery = searchQuery.toLowerCase();
@@ -194,14 +199,15 @@ const ShopByCategory = ({
             product.category.toLowerCase().includes(lowerCaseQuery)
         );
       }
-  
+
       setProducts(productsData);
       setFilteredProducts(productsData);
+      setDisplayedProductCount(productsData.length);
     } catch (error) {
       console.error("Error fetching products:", error.message || error);
     }
   };
-  
+
   // Fetch products when search query, price, color, or material changes
   useEffect(() => {
     fetchProducts();
@@ -240,26 +246,19 @@ const ShopByCategory = ({
     });
   };
 
-  // const handleRangeChange = (e) => {
-  //   setPrice(e.target.value);
-  //   const filteredByPrice = products.filter((saree) => {
-  //     const priceValue = parseFloat(String(saree.price).replace(/[^0-9.-]+/g, ""));
-  //     return priceValue <= e.target.value;
-  //   });
-  //   setFilteredSarees(filteredByPrice);
-  // };
-  const [priceRange, setPriceRange] = useState([0, 8000]);
+
   const handleRangeChange = (newRange) => {
     setPriceRange(newRange);
-  
-    if (!Array.isArray(products) || products.length === 0) return; // Prevent errors if products are empty or undefined
-  
+
+    if (!Array.isArray(products) || products.length === 0) return; 
+
+
     const filteredByPrice = products.filter((saree) => {
       const priceValue = parseFloat(String(saree.price).replace(/[^0-9.-]+/g, ""));
       return !isNaN(priceValue) && priceValue >= newRange[0] && priceValue <= newRange[1];
     });
-  
-    setFilteredSarees(filteredByPrice);
+
+    setFilteredProducts(filteredByPrice);
   };
   
   
@@ -284,14 +283,20 @@ const ShopByCategory = ({
     setInStockOnly((prev) => {
       const newInStockOnly = !prev;
   
-      // When the checkbox is checked (blue), show all products
-      // When the checkbox is unchecked, filter only in-stock products
-      const filtered = newInStockOnly ? products : products.filter(product => product.inStock);
+      let updatedProducts;
+      if (newInStockOnly) {
+        updatedProducts = products; 
+      } else {
+        updatedProducts = products.filter((product) => product.inStock); 
+      }
   
-      setFilteredProducts(filtered);
+      setFilteredProducts(updatedProducts);
+      setDisplayedProductCount(updatedProducts.length); 
+  
       return newInStockOnly;
     });
   };
+  
   
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -302,13 +307,15 @@ const ShopByCategory = ({
 
   const handleCategoryClick = (category) => {
     console.log("category", category);
-
-    const filteroutProducts = products.filter(
+  
+    const filteredProducts = products.filter(
       (productItem) => productItem.category_id === category
     );
-    setFilteredProducts(filteroutProducts)
-    
+  
+    setFilteredProducts(filteredProducts);
+    setDisplayedProductCount(filteredProducts.length); // ✅ Update displayed product count
   };
+  
   // console.log("filteredProducts", filteredProducts);
   // console.log("selectedCategory", selectedCategory);
 
@@ -620,7 +627,8 @@ const ShopByCategory = ({
         <div className="col-md-12 d-flex justify-content-between align-items-center mb-4">
           <div style={{ marginLeft: "26%" }}>
             <h4>All Collections</h4>
-            <p>Showing {products.length} products</p>
+            {/* <p>Showing {products.length} products</p> */}
+            <p>Showing {displayedProductCount} products</p> 
           </div>
           <div className="d-flex align-items-center">
           <input
@@ -655,7 +663,7 @@ const ShopByCategory = ({
         className="custom-slider"
         thumbClassName="custom-thumb"
         trackClassName="custom-track"
-        value={priceRange}
+        value={price}
         min={0}
         max={8000}
         step={1}
@@ -670,9 +678,9 @@ const ShopByCategory = ({
 
       {/* Price Display */}
       <div className="flex justify-between text-sm mt-3">
-        <span className="font-bold">₹{priceRange[0]}</span>
+        <span className="font-bold">₹{price[0]}</span>
 
-        <span className="font-bold" style={{marginLeft:'65%'}}>₹{priceRange[1]}</span>
+        <span className="font-bold" style={{marginLeft:'65%'}}>₹{price[1]}</span>
       </div>
 
  

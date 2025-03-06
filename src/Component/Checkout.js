@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { clearCart } from "../redux/cartSlice";
 import './checkout.css';
 import animation from '../Images/Animation.gif'
+import { FaEdit, FaPlus } from 'react-icons/fa';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createOrder } from '../redux/actions/orderActions';
@@ -30,8 +31,10 @@ const Checkout = () => {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const dispatch = useDispatch();
   const { loading, order, error } = useSelector((state) => state.order);
-  
-  
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [selectedAddressIndex, setSelectedAddressIndex] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState(null);
   const useData = localStorage.getItem("user");
   const parsedData = useData ? JSON.parse(useData) : null;
 
@@ -43,7 +46,15 @@ const Checkout = () => {
     setVoucherData(Array.isArray(savedVouchers) ? savedVouchers : [savedVouchers]);
   }, []);
   
-  
+  useEffect(() => {
+    const savedData = JSON.parse(sessionStorage.getItem('savedAddresses')) || [];
+    setSavedAddresses(savedData);
+    if (savedData.length > 0) {
+      setSelectedAddressIndex(0);
+      setSelectedAddress(savedData[0]);
+    }
+  }, []);
+
   
 
   console.log(parsedData, "parsedData");
@@ -86,14 +97,22 @@ const Checkout = () => {
   const grandTotal = subtotal + shippingCharges - discount;
   // const discount = 0;
   const handlePayment = () => {
+    if (!selectedAddress) {
+      toast.error('Please select an address before proceeding to payment.');
+      return;
+    }
     const orderData = {
-      email,
-      firstName,
-      lastName,
-      address: { address, number: phoneNumber, city },
-      phoneNumber,
+      email: selectedAddress.email,
+      firstName: selectedAddress.firstName,
+      lastName: selectedAddress.lastName,
+      address: {
+        address: selectedAddress.address,
+        number: selectedAddress.phoneNumber,
+        city: selectedAddress.city,
+      },
+      phoneNumber: selectedAddress.phoneNumber,
       cartItems: cartItems.map((item) => ({
-        images: item.images[0], 
+        images: item.images[0],
         category: item.category,
         name: item.name,
         price: item.price,
@@ -103,15 +122,15 @@ const Checkout = () => {
       })),
       paymentMethod,
       coupon: appliedVoucher ? appliedVoucher.voucherCode : "No Coupon Applied",
-      discount,
+      discount: 0,
       totalAmount: grandTotal,
       date: new Date().toLocaleDateString(),
       userId: parsedData.id,
     };
-  
     console.log("Order Data:", orderData);
     dispatch(createOrder(orderData));
   };
+
   
   
   
@@ -133,16 +152,26 @@ const Checkout = () => {
   }, [order, error, dispatch]);
   
   
-  const handleSaveInformation = (e) => {
-    if (e.target.checked) {
-      toast.success("Information saved successfully!", {
-        position: "top-right",
-        autoClose: 2000, // Closes in 2 seconds
-        closeOnClick: true,
-        draggable: true,
-      });
-    }
+  const handleSaveInformation = (newAddress) => {
+    const updatedAddresses = [...savedAddresses, newAddress];
+    setSavedAddresses(updatedAddresses);
+    sessionStorage.setItem('savedAddresses', JSON.stringify(updatedAddresses));
+    toast.success('Address saved successfully!');
+    setShowForm(false);
+    setSelectedAddressIndex(updatedAddresses.length - 1);
+    setSelectedAddress(newAddress);
   };
+
+  const handleEditAddress = (index) => {
+    setShowForm(true);
+    setSelectedAddress(savedAddresses[index]);
+  };
+
+  const handleSelectAddress = (index) => {
+    setSelectedAddressIndex(index);
+    setSelectedAddress(savedAddresses[index]);
+  };
+
   
 
   return (
@@ -159,93 +188,57 @@ const Checkout = () => {
       <div className="row checkout-row">
           {error && <p style={{ color: 'red' }}>{error}</p>}
 <div className="col-md-7">
-  <h4>Contact<span style={{color:'red',}}>*</span></h4>
-  <input
-            type="email"
-            className="form-control mb-3"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-  <label>
-    <input type="checkbox" /> Email me with news and offers
-  </label>
-
-  <h5 className="mt-4">Delivery<span style={{color:'red'}}>*</span></h5>
-  <div className="row">
-    <div className="col-md-6">
-    <input
-                type="text"
-                className="form-control mb-3"
-                placeholder="First Name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-              />
-    </div>
-    <div className="col-md-6">
-    <input
-                type="text"
-                className="form-control mb-3"
-                placeholder="Last Name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-              />
-    </div>
-  </div>
-  <input
-            type="text"
-            className="form-control mb-3"
-            placeholder="Address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-          />
-    <input
-            type="text"
-            className="form-control mb-3"
-            placeholder="Landmark"
-            value={landmark}
-            onChange={(e) => setLandmark(e.target.value)}
-          />
-  <div className="row">
-    <div className="col-md-4">
-    <input
-                type="text"
-                className="form-control mb-3"
-                placeholder="City"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-              />
-    </div>
-    <div className="col-md-4">
-    <input
-                type="text"
-                className="form-control mb-3"
-                placeholder="State"
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-              />
-    </div>
-    <div className="col-md-4">
-    <input
-                type="text"
-                className="form-control mb-3"
-                placeholder="Pincode"
-                value={pincode}
-                onChange={(e) => setPincode(e.target.value)}
-              />
-    </div>
-  </div>
-  <input
-            type="text"
-            className="form-control mb-3"
-            placeholder="Phone Number"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-          />
-<label>
-  <input type="checkbox" onChange={handleSaveInformation} /> Save this information
-</label>
 <ToastContainer />
+      <h4>Saved Addresses</h4>
+      {savedAddresses.map((addr, index) => (
+        <div key={index} className={`border p-2 rounded d-flex justify-content-between align-items-center mb-2 ${selectedAddressIndex === index ? 'bg-light' : ''}`}
+          onClick={() => handleSelectAddress(index)}
+          style={{ cursor: 'pointer' }}>
+          <div>
+            <p className="mb-0"><strong>{addr.firstName} {addr.lastName}</strong></p>
+            <p className="mb-0" style={{ fontSize: '14px' }}>{addr.address}, {addr.city}, {addr.state} - {addr.pincode}</p>
+            <p className="mb-0" style={{ fontSize: '14px' }}>Phone: {addr.phoneNumber}</p>
+          </div>
+          <FaEdit style={{ cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); handleEditAddress(index); }} />
+        </div>
+      ))}
+      
+      <button className="btn btn-secondary mt-2" onClick={() => setShowForm(true)}>
+        <FaPlus /> Add New Address
+      </button>
+      
+      {showForm && (
+        <div className="mt-4">
+          <h4>Contact <span style={{ color: 'red' }}>*</span></h4>
+          <input type="email" className="form-control mb-3" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+
+          <h5>Delivery Address <span style={{ color: 'red' }}>*</span></h5>
+          <div className="row">
+            <div className="col-md-6">
+              <input type="text" className="form-control mb-3" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+            </div>
+            <div className="col-md-6">
+              <input type="text" className="form-control mb-3" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+            </div>
+          </div>
+          <input type="text" className="form-control mb-3" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
+          <input type="text" className="form-control mb-3" placeholder="Landmark" value={landmark} onChange={(e) => setLandmark(e.target.value)} />
+          <div className="row">
+            <div className="col-md-4">
+              <input type="text" className="form-control mb-3" placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} />
+            </div>
+            <div className="col-md-4">
+              <input type="text" className="form-control mb-3" placeholder="State" value={state} onChange={(e) => setState(e.target.value)} />
+            </div>
+            <div className="col-md-4">
+              <input type="text" className="form-control mb-3" placeholder="Pincode" value={pincode} onChange={(e) => setPincode(e.target.value)} />
+            </div>
+          </div>
+          <input type="text" className="form-control mb-3" placeholder="Phone Number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+          
+          <button className="btn btn-primary me-2" onClick={handleSaveInformation}>Save Address</button>
+        </div>
+      )}
 
 
   <div className="mt-4" style={{ backgroundColor: "#f9f9f9", padding: "20px", borderRadius: "10px" }}>

@@ -1063,7 +1063,7 @@ const fetchOrders = async () => {
     </h5>
     {isDescriptionExpanded && (
       
-      <p style={{ marginTop: "10px", fontSize:'12px' }}>
+      <p style={{ marginTop: "10px", fontSize:'14px' }}>
         {/* A tribute to the erstwhile art of handweaving and handspinning, this handwoven cotton zari saree from our collection 'Atout by Supriya' will take you through your celebrations effortlessly with a subtle touch of glamour.
 
 - An ethically crafted handwoven cotton zari saree in charming shades handdyed with festive hues.

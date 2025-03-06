@@ -35,9 +35,13 @@ const Header = () => {
     setDropdownOpen(!dropdownOpen); // Toggle dropdown on click
   };
 
- 
+ const handleNavigation = (path) => {
+  navigate(path, { replace: true });
+};
+
 
   const handleNavigate = (path) => {
+    
     navigate(path);
     setDropdownOpen(false); // Close the dropdown
   };
