@@ -189,7 +189,7 @@ const Checkout = () => {
           {error && <p style={{ color: 'red' }}>{error}</p>}
 <div className="col-md-7">
 <ToastContainer />
-      <h4>Saved Addresses</h4>
+      {/* <h4>Saved Addresses</h4> */}
       {savedAddresses.map((addr, index) => (
         <div key={index} className={`border p-2 rounded d-flex justify-content-between align-items-center mb-2 ${selectedAddressIndex === index ? 'bg-light' : ''}`}
           onClick={() => handleSelectAddress(index)}
