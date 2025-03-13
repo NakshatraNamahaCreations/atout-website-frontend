@@ -24,6 +24,8 @@ import "animate.css";
 import ShippingPolicy from "./ShippingPolicy";
 import RefundPolicy from "./RefundPolicy";
 import ReturnPolicy from "./ReturnPolicy";
+import TermsAndConditions from "./Terms";
+import PrivacyPolicy from "./privacy";
 
 function App() {
   const location = useLocation();
@@ -64,8 +66,9 @@ function App() {
 
         <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/shippingpolicy" element={<ShippingPolicy />} />
-        <Route path="/refundpolicy" element={<RefundPolicy />} />
+        <Route path="/privacypolicy" element={<PrivacyPolicy />} />
         <Route path="/returnpolicy" element={<ReturnPolicy />} />
+        <Route path="/termsandcondition" element={<TermsAndConditions />} />
 
         <Route path="/shop" element={<ShopByCategory setCartVisible={setCartVisible} />} />
         <Route path="/description" element={<DescriptionPage setCartItems={setCartItems} setCartVisible={setCartVisible} />} />

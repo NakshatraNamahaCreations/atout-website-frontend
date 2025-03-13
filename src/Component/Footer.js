@@ -35,10 +35,16 @@ function Footer() {
       Shipping Policy
     </a>
     <a href="/returnpolicy" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '' }}>
-     Return Policy
+     Return/Refund Policy
     </a>
-    <a href="/refundpolicy" style={{ display: 'block', color: 'white', textDecoration: 'none' }}>
+    {/* <a href="/refundpolicy" style={{ display: 'block', color: 'white', textDecoration: 'none' }}>
     Refund Policy
+    </a> */}
+    <a href="/termsandcondition" style={{ display: 'block', color: 'white', textDecoration: 'none' }}>
+    Terms and Conditions
+    </a>
+    <a href="/privacypolicy" style={{ display: 'block', color: 'white', textDecoration: 'none' }}>
+    Privacy Policy
     </a>
   </div>
 </div>
