@@ -31,14 +31,14 @@ function Footer() {
         <div className="col-md-3" style={{ marginTop: '1%' }}>
   <h4 className="footer-heading">Help</h4>
   <div>
-    <a href="#" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '' }}>
+    <a href="/shippingpolicy" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '' }}>
       Shipping Policy
     </a>
-    <a href="#" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '' }}>
-      Refund/Return Policy
+    <a href="/returnpolicy" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '' }}>
+     Return Policy
     </a>
-    <a href="#" style={{ display: 'block', color: 'white', textDecoration: 'none' }}>
-      Privacy Policy
+    <a href="/refundpolicy" style={{ display: 'block', color: 'white', textDecoration: 'none' }}>
+    Refund Policy
     </a>
   </div>
 </div>

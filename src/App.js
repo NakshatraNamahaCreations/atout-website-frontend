@@ -21,6 +21,9 @@ import DashboardPage from './Component/DashboardPage';
 import MyOrdersPage from './Component/MyOrdersPage';
 import { Modal, Button } from 'react-bootstrap';
 import "animate.css";
+import ShippingPolicy from "./ShippingPolicy";
+import RefundPolicy from "./RefundPolicy";
+import ReturnPolicy from "./ReturnPolicy";
 
 function App() {
   const location = useLocation();
@@ -58,7 +61,12 @@ function App() {
       <Routes> 
         <Route path="/" element={<HomePage />} />
         <Route path="/about-us" element={<AboutUs />} />
+
         <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="/shippingpolicy" element={<ShippingPolicy />} />
+        <Route path="/refundpolicy" element={<RefundPolicy />} />
+        <Route path="/returnpolicy" element={<ReturnPolicy />} />
+
         <Route path="/shop" element={<ShopByCategory setCartVisible={setCartVisible} />} />
         <Route path="/description" element={<DescriptionPage setCartItems={setCartItems} setCartVisible={setCartVisible} />} />
         <Route path="/product/:id" element={<DescriptionPage setCartItems={setCartItems} setCartVisible={setCartVisible} />} />
@@ -73,16 +81,7 @@ function App() {
 
       <Footer />
 
-      {/* Show Login Popup on all pages if not authenticated and NOT on Profile page */}
-      {/* <Modal show={showPopup} backdrop="static" keyboard={false} centered>
-        <Modal.Body className="text-center">
-       
-          <p>Please login or register to continue.</p>
-          <Button variant="primary" onClick={handleGoToLogin}>
-            Go to Login / Register
-          </Button>
-        </Modal.Body>
-      </Modal> */}
+   
       </div>
     </>
   );
