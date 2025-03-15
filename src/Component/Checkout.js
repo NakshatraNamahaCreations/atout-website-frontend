@@ -152,20 +152,74 @@ const Checkout = () => {
   }, [order, error, dispatch]);
   
   
-  const handleSaveInformation = (newAddress) => {
-    const updatedAddresses = [...savedAddresses, newAddress];
+  const handleSaveInformation = () => {
+    const newAddress = {
+      email,
+      firstName,
+      lastName,
+      address,
+      landmark,
+      city,
+      state,
+      pincode,
+      phoneNumber,
+    };
+  
+    let updatedAddresses = [...savedAddresses];
+  
+    if (selectedAddressIndex !== null) {
+      // If editing, replace the existing address
+      updatedAddresses[selectedAddressIndex] = newAddress;
+    } else {
+      // If adding a new address
+      updatedAddresses.push(newAddress);
+    }
+  
     setSavedAddresses(updatedAddresses);
-    sessionStorage.setItem('savedAddresses', JSON.stringify(updatedAddresses));
-    toast.success('Address saved successfully!');
-    setShowForm(false);
-    setSelectedAddressIndex(updatedAddresses.length - 1);
-    setSelectedAddress(newAddress);
+    
+    try {
+      sessionStorage.setItem('savedAddresses', JSON.stringify(updatedAddresses));
+      toast.success('Address saved successfully!');
+      
+      setShowForm(false);
+      setSelectedAddressIndex(null);
+      setSelectedAddress(null);
+  
+      // Reset form fields
+      setEmail('');
+      setFirstName('');
+      setLastName('');
+      setAddress('');
+      setLandmark('');
+      setCity('');
+      setState('');
+      setPincode('');
+      setPhoneNumber('');
+    } catch (error) {
+      console.error("Error saving address:", error);
+      toast.error("Failed to save address. Please try again.");
+    }
   };
+  
+  
 
   const handleEditAddress = (index) => {
+    const addressToEdit = savedAddresses[index];
+    
+    setEmail(addressToEdit.email);
+    setFirstName(addressToEdit.firstName);
+    setLastName(addressToEdit.lastName);
+    setAddress(addressToEdit.address);
+    setLandmark(addressToEdit.landmark);
+    setCity(addressToEdit.city);
+    setState(addressToEdit.state);
+    setPincode(addressToEdit.pincode);
+    setPhoneNumber(addressToEdit.phoneNumber);
+    
+    setSelectedAddressIndex(index); // Store the index of the address being edited
     setShowForm(true);
-    setSelectedAddress(savedAddresses[index]);
   };
+  
 
   const handleSelectAddress = (index) => {
     setSelectedAddressIndex(index);
@@ -236,7 +290,7 @@ const Checkout = () => {
           </div>
           <input type="text" className="form-control mb-3" placeholder="Phone Number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
           
-          <button className="btn btn-primary me-2" onClick={handleSaveInformation}>Save Address</button>
+          <button className="btn  me-2" onClick={handleSaveInformation} style={{backgroundColor:'#5a352d', color:'white'}}>Save Address</button>
         </div>
       )}
 
