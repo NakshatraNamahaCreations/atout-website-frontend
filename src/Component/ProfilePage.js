@@ -3,15 +3,17 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import login from "../Images/login.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     mobileNumber: "",
-    address: "",
+    // address: "",
     password: "",
     image: null
   });
@@ -23,9 +25,7 @@ const ProfilePage = () => {
     if (storedUser) {
       
       navigate("/dashboard");
-      // setTimeout(() => {
-      //   window.location.reload();
-      // }, 100);
+
     }
   }, [navigate]);
 
@@ -37,7 +37,7 @@ const ProfilePage = () => {
 
   const handleToggle = () => {
     setIsLogin(!isLogin);
-    setFormData({ name: "", email: "", mobileNumber: "", address: "", password: "" , image: null });
+    setFormData({ name: "", email: "", mobileNumber: "",  password: "" , image: null });
     setErrors({});
   };
 
@@ -59,27 +59,13 @@ const ProfilePage = () => {
     else if (!phoneRegex.test(formData.mobileNumber)) newErrors.mobileNumber = "Invalid mobile number";
     if (!formData.password) newErrors.password = "Password is required";
     else if (formData.password.length < 6) newErrors.password = "Password must be at least 6 characters long";
-    if (!formData.address && !isLogin) newErrors.address = "Address is required";
+    // if (!formData.address && !isLogin) newErrors.address = "Address is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // const handleAddAddress = async (userId, address) => {
-  //   if (!userId) {
-  //     console.error("User ID is not available");
-  //     return;
-  //   }
-  //   try {
-  //     const response = await axios.post(
-  //       `https://api.atoutfashion.com/api/customers/addAddress/${userId}`, // Ensure the route matches
-  //       { saved_address: address }
-  //     );
-  //     console.log("Address added successfully:", response.data);
-  //   } catch (error) {
-  //     console.error("Error adding address:", error.response ? error.response.data : error.message);
-  //   }
-  // };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -92,22 +78,22 @@ const ProfilePage = () => {
         formDataToSend.append("mobilenumber", formData.mobileNumber);
         formDataToSend.append("password", formData.password);
         
-        if (formData.address) {
-            formDataToSend.append("saved_address", formData.address);
-        }
+        // if (formData.address) {
+        //     formDataToSend.append("saved_address", formData.address);
+        // }
 
         if (formData.image) {
             formDataToSend.append("image", formData.image); // Append the image file
         }
 
         if (isLogin) {
-            // Login API Call
+           
             const loginData = { mobilenumber: formData.mobileNumber, password: formData.password };
             const response = await axios.post("https://api.atoutfashion.com/api/customers/login", loginData);
 
             alert(response.data.message);
 
-            // Save user data in localStorage
+         
             localStorage.setItem("user", JSON.stringify(response.data.user));
 
 
@@ -127,7 +113,7 @@ const ProfilePage = () => {
             localStorage.setItem("user", JSON.stringify(response.data.user));
 
          
-            setFormData({ name: "", email: "", mobileNumber: "", address: "", password: "", image: null });
+            setFormData({ name: "", email: "", mobileNumber: "",  password: "", image: null });
 
             const userId = response.data.user.id;
 
@@ -152,32 +138,43 @@ const ProfilePage = () => {
 
 
   return (
-    <div className="container d-flex justify-content-center align-items-center vh-100">
+    <div className="container d-flex justify-content-center align-items-center vh-100" style={{fontFamily:"'Poppins', sans-serif"}}>
       <div className="row w-75">
         <div className="col-md-6 d-flex flex-column justify-content-center align-items-center border-end">
           {isLogin ? (
             <>
-              <h2>Login</h2>
-              <form className="w-75" onSubmit={handleSubmit}>
-                <div className="mb-3">
-                  <label htmlFor="mobile" className="form-label">Mobile Number</label>
-                  <input type="text" className="form-control" name="mobileNumber" value={formData.mobileNumber} onChange={handleChange} />
-                  {errors.mobileNumber && <p style={{ color: "red" }}>{errors.mobileNumber}</p>}
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="password" className="form-label">Password</label>
-                  <input type="password" className="form-control" name="password" value={formData.password} onChange={handleChange} />
-                  {errors.password && <p style={{ color: "red" }}>{errors.password}</p>}
-                </div>
-                <button type="submit" className="btn btn-primary w-100">Login</button>
-              </form>
-              <div className="mt-3">
-                <p>Not registered? <span onClick={handleToggle} style={{ color: "blue", cursor: "pointer" }}>Create an account</span></p>
+            <h2>Login</h2>
+            <form className="w-75" onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label htmlFor="mobile" className="form-label">Mobile Number</label>
+                <input type="text" className="form-control" name="mobileNumber" value={formData.mobileNumber} onChange={handleChange} />
+                {errors.mobileNumber && <p style={{ color: "red" }}>{errors.mobileNumber}</p>}
               </div>
-            </>
+              <div className="mb-3 position-relative">
+                <label htmlFor="password" className="form-label">Password</label>
+                <div className="input-group">
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    className="form-control" 
+                    name="password" 
+                    value={formData.password} 
+                    onChange={handleChange} 
+                  />
+                  <span className="input-group-text" onClick={() => setShowPassword(!showPassword)} style={{ cursor: "pointer" }}>
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </span>
+                </div>
+                {errors.password && <p style={{ color: "red" }}>{errors.password}</p>}
+              </div>
+              <button type="submit" className="btn  w-100" style={{backgroundColor:'#c88256'}}>Login</button>
+            </form>
+            <div className="mt-3">
+              <p>Not registered? <span onClick={handleToggle} style={{ color: "#8b5635", cursor: "pointer", fontWeight:'bold' }}>Create an account</span></p>
+            </div>
+          </>
           ) : (
-            <div style={{ marginTop: '25%' }}>
-              <h2>Register</h2>
+            <div style={{ marginTop: '' }}>
+              <h2 style={{textAlign:'start', fontSize:'20px'}}>Register</h2>
               {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
               {errors.server && <p style={{ color: "red" }}>{errors.server}</p>}
               <form className="w-75" onSubmit={handleSubmit}>
@@ -199,21 +196,32 @@ const ProfilePage = () => {
     <input type="text" className="form-control" name="mobileNumber" value={formData.mobileNumber} onChange={handleChange} />
     {errors.mobileNumber && <p style={{ color: "red" }}>{errors.mobileNumber}</p>}
   </div>
-  <div className="mb-3">
+  {/* <div className="mb-3">
     <label htmlFor="address" className="form-label">Address</label>
     <input type="text" className="form-control" name="address" value={formData.address} onChange={handleChange} />
     {errors.address && <p style={{ color: "red" }}>{errors.address}</p>}
-  </div>
+  </div> */}
   <div className="mb-3">
-    <label htmlFor="password" className="form-label">Password</label>
-    <input type="password" className="form-control" name="password" value={formData.password} onChange={handleChange} />
-    {errors.password && <p style={{ color: "red" }}>{errors.password}</p>}
-  </div>
-  <button type="submit" className="btn btn-success w-100">Register</button>
+                  <label htmlFor="password" className="form-label">Password</label>
+                  <div className="input-group">
+                    <input 
+                      type={showPassword ? "text" : "password"} 
+                      className="form-control" 
+                      name="password" 
+                      value={formData.password} 
+                      onChange={handleChange} 
+                    />
+                    <span className="input-group-text" onClick={() => setShowPassword(!showPassword)} style={{ cursor: "pointer" }}>
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </span>
+                  </div>
+                  {errors.password && <p style={{ color: "red" }}>{errors.password}</p>}
+                </div>
+  <button type="submit" className="btn btn-success w-100" style={{backgroundColor:''}}>Register</button>
 </form>
 
               <div className="mt-3">
-                <p>Already have an account? <span onClick={handleToggle} style={{ color: "blue", cursor: "pointer" }}>Login</span></p>
+                <p>Already have an account? <span onClick={handleToggle} style={{ color: "#8b5635", cursor: "pointer" , fontWeight:'bold'}}>Login</span></p>
               </div>
             </div>
           )}
