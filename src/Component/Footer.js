@@ -77,10 +77,10 @@ function Footer() {
 <div className="col-md-3" style={{ marginTop: '1%' }}>
   <h4 className="footer-heading">Connect With Us!</h4>
   <div>
-    <a href="mailto:contact@atoutfashion.com" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '' }}>
+    <a  style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '' }}>
       <i className="fas fa-envelope"></i> contact@atoutfashion.com
     </a>
-    <a href="tel:+1234567890" style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '10px' }}>
+    <a  style={{ display: 'block', color: 'white', textDecoration: 'none', marginBottom: '10px' }}>
       <i className="fas fa-mobile-alt"></i> +91 82962 68061
     </a>
   </div>
