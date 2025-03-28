@@ -26,6 +26,8 @@ import RefundPolicy from "./RefundPolicy";
 import ReturnPolicy from "./ReturnPolicy";
 import TermsAndConditions from "./Terms";
 import PrivacyPolicy from "./privacy";
+import PhonePePayment from "./Component/PhonePePayment"; 
+import PaymentSuccess from "./PaymentSuccess";
 
 function App() {
   const location = useLocation();
@@ -79,6 +81,8 @@ function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path='/orders' element={<MyOrdersPage/>}/>
+        <Route path="/payment" element={<PhonePePayment/>}/>
+        <Route path="/payment-success" element={<PaymentSuccess/>}/>
       </Routes>
       </div>
 
