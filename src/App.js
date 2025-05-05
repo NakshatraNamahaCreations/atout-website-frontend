@@ -28,6 +28,7 @@ import TermsAndConditions from "./Terms";
 import PrivacyPolicy from "./privacy";
 import PhonePePayment from "./Component/PhonePePayment"; 
 import PaymentSuccess from "./PaymentSuccess";
+import OrderSuccess from "./Component/OrderSuccess";
 
 function App() {
   const location = useLocation();
@@ -59,7 +60,7 @@ function App() {
       <div className="App">
       <ReactNotifications />
       <Header setCartVisible={setCartVisible} />
-      <CartOffcanvas visible={cartVisible} onClose={() => setCartVisible(false)} />
+      {/* <CartOffcanvas visible={cartVisible} onClose={() => setCartVisible(false)} /> */}
       <div className="content">
      
       <Routes> 
@@ -77,8 +78,9 @@ function App() {
         <Route path="/product/:id" element={<DescriptionPage setCartItems={setCartItems} setCartVisible={setCartVisible} />} />
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/order-success" element={<OrderSuccess />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/cart" element={<CartPage />} />
+        <Route path="/cart" element={<CartOffcanvas />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path='/orders' element={<MyOrdersPage/>}/>
         <Route path="/payment" element={<PhonePePayment/>}/>

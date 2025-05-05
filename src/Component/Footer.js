@@ -5,7 +5,7 @@ import vectorimage2 from '../Images/Vector_image.png'
 function Footer() {
   return (
     <>
-    <div className="row mt-4 text-center">
+    <div className="footerrow mt-4 text-center">
     <div className="col-12">
       <img
         src={vectorimage2}

@@ -2,22 +2,22 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 const PhonePePayment = () => {
-  const [amount, setAmount] = useState(100); // default 100 paise (₹1)
+  const [amount, setAmount] = useState(100); 
 
   const handlePayment = async () => {
     try {
       const response = await axios.post('https://api.atoutfashion.com/api/payments/initiate', {
         merchantOrderId: `ORDER_${Date.now()}`,
         amount,
-        // redirectUrl: 'http://localhost:3001/payment-success'
+      
       });
 
-      // Log the response to check if redirect URL is received
+
       console.log('Response from server:', response.data);
 
-      const redirectUrl = response.data?.redirectUrl; // Access the redirect URL
+      const redirectUrl = response.data?.redirectUrl; 
       if (redirectUrl) {
-        // Automatically redirect to the payment gateway URL
+       
         window.location.href = redirectUrl;
       } else {
         alert("Payment initiation failed or missing redirect URL!");

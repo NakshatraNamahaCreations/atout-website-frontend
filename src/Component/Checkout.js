@@ -1,9 +1,10 @@
 import React, { useState , useEffect, useLayoutEffect} from 'react';
-import { useLocation, useRevalidator } from 'react-router-dom';
+import { useLocation, useNavigate, useRevalidator } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearCart } from "../redux/cartSlice";
 import './checkout.css';
-import animation from '../Images/Animation.gif'
+import axios from 'axios';
+import animation from '../Images/Animation.gif';
 import { FaEdit, FaPlus } from 'react-icons/fa';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,8 +13,8 @@ import { createOrder } from '../redux/actions/orderActions';
 
 const Checkout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const cartItems = location.state?.cartItems || [];
-
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -24,8 +25,8 @@ const Checkout = () => {
   const [pincode, setPincode] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
-  const [voucherCode, setVoucherCode] = useState(""); // User input
-  const [appliedVoucher, setAppliedVoucher] = useState(null); // Selected Voucher
+  const [voucherCode, setVoucherCode] = useState(""); 
+  const [appliedVoucher, setAppliedVoucher] = useState(null); 
   const [discount, setDiscount] = useState(0);
   const [voucherData, setVoucherData] = useState([]);
   const [orderPlaced, setOrderPlaced] = useState(false);
@@ -96,11 +97,12 @@ const Checkout = () => {
   const shippingCharges = 130;
   const grandTotal = subtotal + shippingCharges - discount;
   // const discount = 0;
-  const handlePayment = () => {
+  const handlePayment = async () => {
     if (!selectedAddress) {
       toast.error('Please select an address before proceeding to payment.');
       return;
     }
+
     const orderData = {
       email: selectedAddress.email,
       firstName: selectedAddress.firstName,
@@ -111,7 +113,7 @@ const Checkout = () => {
         city: selectedAddress.city,
       },
       phoneNumber: selectedAddress.phoneNumber,
-      cartItems: cartItems.map((item) => ({
+      cartItems: cartItems.map(item => ({
         images: item.images[0],
         category: item.category,
         name: item.name,
@@ -127,29 +129,54 @@ const Checkout = () => {
       date: new Date().toLocaleDateString(),
       userId: parsedData.id,
     };
+
     console.log("Order Data:", orderData);
     dispatch(createOrder(orderData));
+
+    // Proceed to initiate payment for UPI (PhonePe)
+    if (paymentMethod === 'UPI') {
+      try {
+        const response = await axios.post('https://api.atoutfashion.com/api/payments/initiate', {
+          merchantOrderId: `ORDER_${Date.now()}`,
+          amount: grandTotal * 100,  // Convert grandTotal to paise (1 rupee = 100 paise)
+        });
+
+        console.log('Payment initiation response:', response.data);
+
+        const redirectUrl = response.data?.redirectUrl; 
+        if (redirectUrl) {
+          window.location.href = redirectUrl;  // Redirect user to the payment page
+        } else {
+          alert("Payment initiation failed or missing redirect URL!");
+        }
+
+      } catch (error) {
+        console.error('Payment initiation error:', error.response?.data || error);
+        alert("An error occurred! Check console for details.");
+      }
+    }
   };
+
 
   
   
   
   useEffect(() => {
     if (order) {
-      console.log('Order created successfully:', order); 
+      console.log('Order created successfully:', order);
       setOrderPlaced(true);
       dispatch(clearCart());
-  
-     
+
+      // Navigate to the success page with order ID (optional)
       setTimeout(() => {
-        window.location.href = "/shop"; 
-      }, 2000); 
+        navigate('/order-success', { state: { orderId: order.id } });
+      }, 2000);
     }
-  
+
     if (error) {
       console.error('Error creating order:', error);
     }
-  }, [order, error, dispatch]);
+  }, [order, error, dispatch, navigate]);
   
   
   const handleSaveInformation = () => {
@@ -230,15 +257,7 @@ const Checkout = () => {
 
   return (
     <div className="container" style={{marginTop:'8%', fontFamily:"'Poppins', sans-serif"}} >
-         {orderPlaced ? (
-        // Success Message UI
-        <div className="text-center">
-          <img src={animation} alt="Success" style={{ width: "200px", height: "auto" }} />
-          <h3 className="mt-3 text-success">Order Placed Successfully!</h3>
-          {/* <p>Your order ID: {order.id}</p> */}
-          <p>Thank you for shopping with us.</p>
-        </div>
-      ) : (
+    
       <div className="row checkout-row">
           {error && <p style={{ color: 'red' }}>{error}</p>}
 <div className="col-md-7">
@@ -437,7 +456,7 @@ const Checkout = () => {
 
 
       </div>
-       )}
+       
     </div>
   );
 };

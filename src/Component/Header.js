@@ -117,12 +117,10 @@ const Header = () => {
           </div>
 
           <div className="col-auto d-flex align-items-center">
-            <button className="btn btn-link text-dark p-2 position-relative" onClick={() => setCartVisible(true)}>
+          <Link to="/cart" className="btn btn-link text-dark p-2 position-relative">
               <i className="fas fa-shopping-cart" style={{ fontSize: "24px" }}></i>
               <span className="badge bg-danger position-absolute top-0 start-100 translate-middle" style={{ borderRadius: "50%", fontSize: "12px", width: "20px", height: "20px", display: "flex", justifyContent: "center", alignItems: "center" }}>{cartItems.length}</span>
-            </button>
-            <CartOffcanvas cartVisible={cartVisible} handleCartToggle={() => setCartVisible(false)} />
-            {/* <Link to="/profile"><button className="btn btn-link text-dark p-2"><i className="fas fa-user"></i></button></Link> */}
+            </Link>
             <div className="position-relative">
         <button className="btn btn-link text-dark p-2" onClick={handleProfileClick}>
           <FontAwesomeIcon icon={faUser} size="lg" />
